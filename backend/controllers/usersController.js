@@ -19,6 +19,11 @@ const normalizeStringArray = (value) => {
 const getUserById = async (req, res) => {
   const { id } = req.params
 
+  if (req.auth?.userId && req.auth.userId !== id) {
+    res.status(403).json({ error: 'Forbidden.' })
+    return
+  }
+
   if (!isValidObjectId(id)) {
     res.status(400).json({ error: 'Invalid user id.' })
     return
@@ -79,6 +84,11 @@ const updateUser = async (req, res) => {
   const { id } = req.params
   const updates = req.body
 
+  if (req.auth?.userId && req.auth.userId !== id) {
+    res.status(403).json({ error: 'Forbidden.' })
+    return
+  }
+
   if (!isValidObjectId(id)) {
     res.status(400).json({ error: 'Invalid user id.' })
     return
@@ -118,6 +128,11 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { id } = req.params
+
+  if (req.auth?.userId && req.auth.userId !== id) {
+    res.status(403).json({ error: 'Forbidden.' })
+    return
+  }
 
   if (!isValidObjectId(id)) {
     res.status(400).json({ error: 'Invalid user id.' })

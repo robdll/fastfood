@@ -73,6 +73,7 @@ function App() {
       onLogout={() => {
         clearJwt()
         setJwtState(null)
+        showToast({ type: 'success', message: t('common.logoutSuccess') })
       }}
       t={t}
     />
