@@ -12,6 +12,7 @@ export const translations = {
       backToLanding: '← Back to landing',
       logout: 'Log out',
       language: 'Language',
+      languageChanged: 'Language updated.',
     },
     health: {
       title: 'API health',
@@ -73,6 +74,8 @@ export const translations = {
       restaurantAddress: 'Restaurant address',
       submitCreate: 'Create account',
       submitSignIn: 'Sign in',
+      signupToast: 'Signup succeeded. You can log in now.',
+      signupError: 'Unable to create the account right now.',
       signupNote: 'We will create a demo profile to continue.',
       signinNote: 'Demo access for now.',
     },
@@ -89,6 +92,7 @@ export const translations = {
       backToLanding: '← Torna alla landing',
       logout: 'Esci',
       language: 'Lingua',
+      languageChanged: 'Lingua aggiornata.',
     },
     health: {
       title: 'Stato API',
@@ -151,6 +155,8 @@ export const translations = {
       restaurantAddress: 'Indirizzo ristorante',
       submitCreate: 'Crea account',
       submitSignIn: 'Accedi',
+      signupToast: 'Registrazione completata. Ora puoi accedere.',
+      signupError: "Impossibile creare l'account al momento.",
       signupNote: 'Creiamo un profilo demo per continuare.',
       signinNote: 'Accesso demo per ora.',
     },

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import {
   createT,
@@ -8,6 +8,7 @@ import {
 } from './i18n'
 import AppRoutes from './routes/AppRoutes'
 import { clearJwt, getJwt, setJwt } from './utils/auth'
+import useToast from './hooks/useToast'
 
 function App() {
   const [health, setHealth] = useState(null)
@@ -16,6 +17,8 @@ function App() {
   const isAuthed = Boolean(jwt)
   const [lang, setLang] = useState(getInitialLang)
   const t = useMemo(() => createT(lang), [lang])
+  const { showToast } = useToast()
+  const hasMountedRef = useRef(false)
   const handleLangChange = (next) => setLang(normalizeLang(next))
 
   useEffect(() => {
@@ -24,6 +27,14 @@ function App() {
       document.documentElement.lang = lang
     }
   }, [lang])
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      return
+    }
+    showToast({ type: 'info', message: t('common.languageChanged') })
+  }, [lang, showToast, t])
 
   useEffect(() => {
     let cancelled = false
