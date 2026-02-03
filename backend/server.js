@@ -1,18 +1,9 @@
 import express from 'express'
+import router from './routes/index.js'
 
 const app = express()
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    ok: true,
-    service: 'backend',
-    timestamp: new Date().toISOString(),
-  })
-})
-
-app.get('/', (req, res) => {
-  res.type('text').send('Backend is running. Try GET /api/health')
-})
+app.use(router)
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
