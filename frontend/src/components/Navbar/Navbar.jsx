@@ -16,7 +16,6 @@ function Navbar({ t, lang, onLangChange, children, showLanguage = true }) {
             <span className="brand__text">{t('common.brand')}</span>
           </div>
           <div className="topbar__actions">
-            {children}
             {showLanguage && (
               <LanguageSelector
                 lang={lang}
@@ -24,6 +23,7 @@ function Navbar({ t, lang, onLangChange, children, showLanguage = true }) {
                 t={t}
               />
             )}
+            {children}
           </div>
         </div>
       </div>

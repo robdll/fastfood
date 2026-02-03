@@ -4,7 +4,6 @@ import './LanguageSelector.css'
 function LanguageSelector({ lang, onChange, t }) {
   return (
     <div className="langToggle">
-      <span className="langToggle__label">{t('common.language')}</span>
       <div className="segmented" role="group" aria-label={t('common.language')}>
         {SUPPORTED_LANGS.map((option) => (
           <button
