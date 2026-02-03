@@ -61,6 +61,59 @@
   font-weight: 700;
 }
 
+.preferenceList {
+  display: grid;
+  gap: 6px;
+}
+
+.preferenceTitle {
+  margin-top: 8px;
+}
+
+.infoIcon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: help;
+  line-height: 1;
+  background: var(--paper);
+}
+
+.infoIcon::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 180px;
+  max-width: 240px;
+  padding: 8px 10px;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  box-shadow: var(--shadow-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+  z-index: 2;
+  text-align: center;
+}
+
+.infoIcon:hover::after,
+.infoIcon:focus-visible::after {
+  opacity: 1;
+}
+
 .helperText {
   margin: 6px 0 0;
   font-size: 12px;

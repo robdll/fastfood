@@ -45,7 +45,13 @@ function AuthForm({ onSubmit, t }) {
       }
 
       if (roles.client) {
-        payload.clientData = getFormValues(formData, ['payment', 'preferences'])
+        const { paymentMethod } = getFormValues(formData, ['paymentMethod'])
+        payload.clientData = {
+          paymentMethod,
+          preferences: formData
+            .getAll('preferences')
+            .map((value) => value.toString().trim()),
+        }
       }
 
       if (roles.restaurant) {
@@ -66,7 +72,7 @@ function AuthForm({ onSubmit, t }) {
       const wasSuccessful = await signup(payload, t('auth.signupError'))
       if (wasSuccessful) {
         showToast({ type: 'success', message: t('auth.signupToast') })
-        onSubmit()
+        setMode('signin')
       }
       return
     }
@@ -173,21 +179,65 @@ function AuthForm({ onSubmit, t }) {
                 <h3 className="miniTitle">{t('auth.clientData')}</h3>
                 <label className="formField">
                   <span>{t('auth.paymentMethod')}</span>
-                  <input
-                    className="input"
-                    name="payment"
-                    placeholder={t('auth.paymentPlaceholder')}
-                  />
+                  <select className="input" name="paymentMethod" required>
+                    <option value="">{t('auth.paymentSelectPlaceholder')}</option>
+                    <option value="delivery">{t('auth.paymentDelivery')}</option>
+                    <option value="cards">{t('auth.paymentCards')}</option>
+                    <option value="coupons">{t('auth.paymentCoupons')}</option>
+                  </select>
                 </label>
-                <label className="formField">
-                  <span>{t('auth.preferences')}</span>
-                  <textarea
-                    className="textarea"
-                    name="preferences"
-                    rows={3}
-                    placeholder={t('auth.preferencesPlaceholder')}
-                  />
-                </label>
+                <div className="formField">
+                  <span className="preferenceTitle">
+                    {t('auth.preferences')}
+                  </span>
+                  <div className="preferenceList">
+                    <label className="checkboxRow">
+                      <input
+                        type="checkbox"
+                        name="preferences"
+                        value="promo"
+                      />
+                      <span>{t('auth.preferencePromo')}</span>
+                      <span
+                        className="infoIcon"
+                        data-tooltip={t('auth.preferencePromoHint')}
+                        aria-label={t('auth.preferencePromoHint')}
+                      >
+                        i
+                      </span>
+                    </label>
+                    <label className="checkboxRow">
+                      <input
+                        type="checkbox"
+                        name="preferences"
+                        value="cheapest"
+                      />
+                      <span>{t('auth.preferenceCheapest')}</span>
+                      <span
+                        className="infoIcon"
+                        data-tooltip={t('auth.preferenceCheapestHint')}
+                        aria-label={t('auth.preferenceCheapestHint')}
+                      >
+                        i
+                      </span>
+                    </label>
+                    <label className="checkboxRow">
+                      <input
+                        type="checkbox"
+                        name="preferences"
+                        value="popular"
+                      />
+                      <span>{t('auth.preferencePopular')}</span>
+                      <span
+                        className="infoIcon"
+                        data-tooltip={t('auth.preferencePopularHint')}
+                        aria-label={t('auth.preferencePopularHint')}
+                      >
+                        i
+                      </span>
+                    </label>
+                  </div>
+                </div>
               </div>
             )}
 
