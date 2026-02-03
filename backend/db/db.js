@@ -9,7 +9,6 @@ dotenv.config({ path: resolve(__dirname, '..', '.env') })
 
 const {
   MONGODB_URI = '',
-  MONGO_URI = '',
   MONGODB_DB_USER = '',
   MONGODB_DB_PASSWORD = '',
   MONGODB_CLUSTER_HOST = '',
@@ -18,10 +17,6 @@ const {
 const DB_NAME = process.env.MONGODB_DB_NAME || 'fastfood'
 
 const buildMongoUri = () => {
-  if (MONGO_URI) {
-    return MONGO_URI
-  }
-
   if (MONGODB_URI) {
     return MONGODB_URI
   }

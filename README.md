@@ -80,10 +80,9 @@ MONGODB_CLUSTER_HOST=fastfoodcluster0.ds6zcgz.mongodb.net
 MONGODB_APP_NAME=FastFoodCluster0
 ```
 
-You can also set `MONGO_URI` or `MONGODB_URI` directly (takes precedence in this order):
+You can also set `MONGODB_URI` directly (takes precedence in this order):
 
 ```bash
-MONGO_URI="mongodb+srv://user:password@cluster.mongodb.net/fastfood?retryWrites=true&w=majority&appName=FastFoodCluster0"
 MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/?appName=FastFoodCluster0"
 ```
 
