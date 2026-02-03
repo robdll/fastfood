@@ -10,7 +10,7 @@ function Navbar({ t, lang, onLangChange, children, showLanguage = true }) {
             <img
               className="brand__mark"
               src="/images/hero-cutout.png"
-              alt=""
+              alt="burger logo"
               aria-hidden="true"
             />
             <span className="brand__text">{t('common.brand')}</span>
