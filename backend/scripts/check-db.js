@@ -1,4 +1,4 @@
-const { connectToDatabase, DB_NAME } = require('../db/db')
+import { connectToDatabase, DB_NAME } from '../db/db.js'
 
 const checkDatabaseConnection = async () => {
   const { client, db } = await connectToDatabase()
@@ -12,7 +12,6 @@ const checkDatabaseConnection = async () => {
 }
 
 checkDatabaseConnection().catch((error) => {
-  // eslint-disable-next-line no-console
   console.error('MongoDB connection failed:', error)
   process.exit(1)
 })

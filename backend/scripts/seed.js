@@ -1,9 +1,12 @@
-const fs = require('fs/promises')
-const path = require('path')
-const { ObjectId } = require('mongodb')
+import fs from 'fs/promises'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { ObjectId } from 'mongodb'
 
-const { connectToDatabase, DB_NAME } = require('../db/db')
+import { connectToDatabase, DB_NAME } from '../db/db.js'
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const SEED_FILE = path.join(__dirname, '..', 'db', 'meal.json')
 const COLLECTION_NAME = 'meals'
 
@@ -46,7 +49,6 @@ const seedMeals = async () => {
 }
 
 seedMeals().catch((error) => {
-  // eslint-disable-next-line no-console
   console.error('Seeding failed:', error)
   process.exit(1)
 })

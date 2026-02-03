@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb')
+import { MongoClient } from 'mongodb'
 
 const {
   MONGODB_URI = '',
@@ -44,7 +44,4 @@ const connectToDatabase = async () => {
   }
 }
 
-module.exports = {
-  connectToDatabase,
-  DB_NAME,
-}
+export { connectToDatabase, DB_NAME }
