@@ -69,6 +69,12 @@
   border-radius: 10px;
 }
 
+.navLink--button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
 .navLink:hover {
   text-decoration: underline;
   text-decoration-thickness: 3px;
@@ -256,6 +262,121 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   background: var(--paper);
+}
+
+.auth {
+  background: var(--primary-gold);
+  min-height: 100vh;
+}
+
+.authCard {
+  max-width: 760px;
+  margin: 40px auto 0;
+}
+
+.authHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.segmented__btn {
+  appearance: none;
+  border: none;
+  background: var(--paper);
+  padding: 8px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.segmented__btn.is-active {
+  background: var(--primary-red);
+  color: var(--paper);
+}
+
+.authForm {
+  margin-top: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.formField {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.formField legend {
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.input,
+.textarea {
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.formField--checkboxes {
+  border: 3px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+  font-weight: 700;
+}
+
+.helperText {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary-red);
+}
+
+.subtleCard {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: none;
+}
+
+.miniTitle {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.authFooter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .card h2 {
