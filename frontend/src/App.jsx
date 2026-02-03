@@ -64,8 +64,9 @@ function App() {
       isAuthed={isAuthed}
       lang={lang}
       onLangChange={handleLangChange}
-      onLogin={() => {
-        const token = `demo-token-${Date.now()}`
+      onLogin={(authResponse) => {
+        const token = authResponse?.token
+        if (!token) return
         setJwt(token)
         setJwtState(token)
       }}

@@ -15,8 +15,8 @@ function AuthPage({ onAuthSuccess, lang, onLangChange, t }) {
         <div className="page">
           <AuthForm
             t={t}
-            onSubmit={() => {
-              onAuthSuccess()
+            onSubmit={(authResponse) => {
+              onAuthSuccess(authResponse)
             }}
           />
         </div>

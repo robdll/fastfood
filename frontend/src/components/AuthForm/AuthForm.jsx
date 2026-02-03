@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import useLogin from '../../hooks/useLogin'
 import useSignup from '../../hooks/useSignup'
 import useToast from '../../hooks/useToast'
 import './AuthForm.css'
@@ -9,7 +10,16 @@ function AuthForm({ onSubmit, t }) {
     client: true,
     restaurant: false,
   })
-  const { signup, isSubmitting, submitError } = useSignup()
+  const {
+    signup,
+    isSubmitting: isSignupSubmitting,
+    submitError: signupError,
+  } = useSignup()
+  const {
+    login,
+    isSubmitting: isLoginSubmitting,
+    submitError: loginError,
+  } = useLogin()
   const { showToast } = useToast()
 
   const hasAnyRole = roles.client || roles.restaurant
@@ -26,7 +36,7 @@ function AuthForm({ onSubmit, t }) {
     event.preventDefault()
 
     if (mode === 'signup') {
-      if (!hasAnyRole || isSubmitting) return
+      if (!hasAnyRole || isSignupSubmitting) return
 
       const formData = new FormData(event.currentTarget)
       const baseFields = getFormValues(formData, [
@@ -77,7 +87,13 @@ function AuthForm({ onSubmit, t }) {
       return
     }
 
-    onSubmit()
+    if (isLoginSubmitting) return
+    const formData = new FormData(event.currentTarget)
+    const { email, password } = getFormValues(formData, ['email', 'password'])
+    const response = await login({ email, password }, t('auth.signinError'))
+    if (response?.token) {
+      onSubmit(response)
+    }
   }
 
   return (
@@ -273,15 +289,19 @@ function AuthForm({ onSubmit, t }) {
           <button
             className="btn btn--primary"
             type="submit"
-            disabled={isSubmitting || (mode === 'signup' && !hasAnyRole)}
+            disabled={
+              isSignupSubmitting ||
+              isLoginSubmitting ||
+              (mode === 'signup' && !hasAnyRole)
+            }
           >
             {mode === 'signup'
               ? t('auth.submitCreate')
               : t('auth.submitSignIn')}
           </button>
-          {submitError && (
+          {(mode === 'signup' ? signupError : loginError) && (
             <span className="tiny errorText" role="status">
-              {submitError}
+              {mode === 'signup' ? signupError : loginError}
             </span>
           )}
           <span className="tiny muted">

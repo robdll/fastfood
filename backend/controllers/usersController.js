@@ -1,13 +1,11 @@
 import { ObjectId } from 'mongodb'
 
 import { connectToDatabase } from '../db/db.js'
+import { isPlainObject } from '../utils/utils.js'
 
 const COLLECTION_NAME = 'users'
 
 const isValidObjectId = (id) => ObjectId.isValid(id)
-
-const isPlainObject = (value) =>
-  value !== null && typeof value === 'object' && !Array.isArray(value)
 
 const normalizeStringArray = (value) => {
   if (Array.isArray(value)) {

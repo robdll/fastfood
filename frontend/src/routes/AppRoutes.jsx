@@ -44,8 +44,8 @@ function AppRoutes({
             <Navigate to="/dashboard" replace />
           ) : (
             <AuthPage
-              onAuthSuccess={() => {
-                onLogin()
+              onAuthSuccess={(authResponse) => {
+                onLogin(authResponse)
                 navigate('/dashboard', { replace: true })
               }}
               lang={lang}
