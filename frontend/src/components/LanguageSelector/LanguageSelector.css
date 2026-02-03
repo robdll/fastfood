@@ -1,0 +1,11 @@
+.langToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.langToggle__label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}

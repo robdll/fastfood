@@ -1,0 +1,15 @@
+.siteFooter {
+  background: var(--primary-sky);
+  border-top: 4px solid var(--ink);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 0;
+}
+
+.siteFooter__inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 18px;
+  font-weight: 700;
+  font-size: 12px;
+  opacity: 0.9;
+}

@@ -1,0 +1,14 @@
+.health__error {
+  color: var(--primary-red);
+  font-weight: 800;
+}
+
+.health__pre {
+  margin: 0;
+  padding: 10px;
+  background: rgba(26, 25, 25, 0.04);
+  border: 3px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  overflow: auto;
+  max-height: 240px;
+}

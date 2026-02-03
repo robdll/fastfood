@@ -1,5 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import {
+  createT,
+  getInitialLang,
+  normalizeLang,
+  setStoredLang,
+} from './i18n'
+import AuthForm from './components/AuthForm/AuthForm'
+import Footer from './components/Footer/Footer'
+import HealthCard from './components/HealthCard/HealthCard'
+import HeroSection from './components/HeroSection/HeroSection'
+import LandingCard from './components/LandingCard/LandingCard'
+import Navbar from './components/Navbar/Navbar'
 
 const TOKEN_KEY = 'jwt'
 
@@ -25,164 +37,62 @@ function useHashRoute() {
   return route
 }
 
-function HealthCard({ health, error }) {
-  return (
-    <section className="card" aria-labelledby="api-health-title">
-      <h2 id="api-health-title">API health</h2>
-      <p className="muted">
-        Quick sanity check that the frontend can reach the backend.
-      </p>
+function Landing({ health, error, onEnterApp, lang, onLangChange, t }) {
+  const whatsNextList = t('landing.whatsNextList')
 
-      {error ? (
-        <p className="health__error">{error}</p>
-      ) : health ? (
-        <pre className="health__pre">{JSON.stringify(health, null, 2)}</pre>
-      ) : (
-        <p className="muted">Loading…</p>
-      )}
-    </section>
-  )
-}
-
-function Landing({ health, error, onEnterApp }) {
   return (
     <div className="landing">
-      <header className="navbar">
-        <div className="navInner">
-          <div className="topbar">
-            <div className="brand" aria-label="FastFood">
-              <img
-                className="brand__mark"
-                src="/images/hero-cutout.png"
-                alt=""
-                aria-hidden="true"
-              />
-              <span className="brand__text">FastFood</span>
-            </div>
-            <button
-              className="navLink navLink--button"
-              type="button"
-              onClick={onEnterApp}
-            >
-              Go to app
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar t={t} lang={lang} onLangChange={onLangChange}>
+        <button
+          className="navLink navLink--button"
+          type="button"
+          onClick={onEnterApp}
+        >
+          {t('common.goToApp')}
+        </button>
+      </Navbar>
 
       <main>
-        <section className="heroFull" aria-labelledby="hero-title">
-          <div className="heroInner">
-            <div className="container">
-              <div className="hero">
-                <div>
-                  <h1 className="hero__title" id="hero-title">
-                    Online ordering
-                    <br />
-                    for fast-food restaurants.
-                  </h1>
-                  <p className="hero__subtitle">
-                    FastFood is a web app that supports the full ordering flow:
-                    customers browse a restaurant menu, build a cart, place orders
-                    and track status updates; restaurateurs manage menu items and
-                    process incoming orders.
-                  </p>
-
-                  <ul className="hero__bullets">
-                    <li>Simple, bold UI with a neobrutalist style.</li>
-                    <li>Backend-first data model exposed via REST APIs.</li>
-                    <li>
-                      Clear separation between structure (React) and styling (CSS).
-                    </li>
-                  </ul>
-
-                  <div className="hero__actions">
-                    <button
-                      className="btn btn--secondary"
-                      type="button"
-                      onClick={onEnterApp}
-                    >
-                      Enter the app
-                    </button>
-                  </div>
-                </div>
-
-                <div
-                  className="hero__illus"
-                  role="img"
-                  aria-label="Project preview"
-                >
-                  <img src="/images/hero-cutout.png" alt="" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <HeroSection t={t} onEnterApp={onEnterApp} />
 
         <section
           id="api-health"
           className="landingSection section"
-          aria-label="Status and info"
+          aria-label={t('landing.sectionLabel')}
         >
           <div className="page">
             <div className="grid">
-              <HealthCard health={health} error={error} />
+              <HealthCard health={health} error={error} t={t} />
 
-              <section className="card" aria-labelledby="what-next-title">
-                <h2 id="what-next-title">What’s next</h2>
-                <p className="muted">
-                  This is just the landing. The “real app” area is currently a stub
-                  so you can already navigate via the CTA.
-                </p>
-                <ul className="muted">
-                  <li>Auth (cliente / ristoratore)</li>
-                  <li>Menu + cart + order status</li>
-                  <li>Restaurant management and deliveries</li>
-                </ul>
-              </section>
+              <LandingCard
+                id="what-next-title"
+                title={t('landing.whatsNextTitle')}
+                body={t('landing.whatsNextBody')}
+                items={Array.isArray(whatsNextList) ? whatsNextList : []}
+              />
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="siteFooter">
-        <div className="siteFooter__inner">
-          Copyright reserved. Student Roberto Di Lillo, Mat. 908918
-        </div>
-      </footer>
+      <Footer text={t('footer.copyright')} />
     </div>
   )
 }
 
-function AppStub() {
+function AppStub({ lang, onLangChange, t }) {
   return (
     <div className="landing">
-      <header className="navbar">
-        <div className="navInner">
-          <div className="topbar">
-            <div className="brand" aria-label="FastFood">
-              <img
-                className="brand__mark"
-                src="/images/hero-cutout.png"
-                alt=""
-                aria-hidden="true"
-              />
-              <span className="brand__text">FastFood</span>
-            </div>
-            <a className="navLink" href="#/">
-              ← Back to landing
-            </a>
-          </div>
-        </div>
-      </header>
+      <Navbar t={t} lang={lang} onLangChange={onLangChange}>
+        <a className="navLink" href="#/">
+          {t('common.backToLanding')}
+        </a>
+      </Navbar>
       <main>
         <div className="page">
           <section className="card">
-            <h2>App area (stub)</h2>
-            <p className="muted">
-              This route exists so the landing CTA has somewhere real to go. We’ll
-              replace this with the actual app screens later.
-            </p>
+            <h2>{t('appStub.title')}</h2>
+            <p className="muted">{t('appStub.body')}</p>
           </section>
         </div>
       </main>
@@ -190,242 +100,47 @@ function AppStub() {
   )
 }
 
-function AuthPage({ onAuthSuccess }) {
-  const [mode, setMode] = useState('signin')
-  const [roles, setRoles] = useState({
-    client: true,
-    restaurant: false,
-  })
-
-  const hasAnyRole = roles.client || roles.restaurant
-
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    setJwt(`demo-token-${Date.now()}`)
-    onAuthSuccess()
-  }
-
+function AuthPage({ onAuthSuccess, lang, onLangChange, t }) {
   return (
     <div className="landing auth">
-      <header className="navbar">
-        <div className="navInner">
-          <div className="topbar">
-            <div className="brand" aria-label="FastFood">
-              <img
-                className="brand__mark"
-                src="/images/hero-cutout.png"
-                alt=""
-                aria-hidden="true"
-              />
-              <span className="brand__text">FastFood</span>
-            </div>
-            <a className="navLink" href="#/">
-              ← Back to landing
-            </a>
-          </div>
-        </div>
-      </header>
+      <Navbar t={t} lang={lang} onLangChange={onLangChange}>
+        <a className="navLink" href="#/">
+          {t('common.backToLanding')}
+        </a>
+      </Navbar>
 
       <main>
         <div className="page">
-          <section className="card authCard" aria-labelledby="auth-title">
-            <div className="authHeader">
-              <div>
-                <h2 id="auth-title">Account access</h2>
-                <p className="muted">
-                  Registrati come cliente, ristoratore, oppure entrambi.
-                </p>
-              </div>
-              <div className="segmented" role="tablist" aria-label="Auth mode">
-                <button
-                  type="button"
-                  className={`segmented__btn ${
-                    mode === 'signin' ? 'is-active' : ''
-                  }`}
-                  onClick={() => setMode('signin')}
-                >
-                  Sign in
-                </button>
-                <button
-                  type="button"
-                  className={`segmented__btn ${
-                    mode === 'signup' ? 'is-active' : ''
-                  }`}
-                  onClick={() => setMode('signup')}
-                >
-                  Sign up
-                </button>
-              </div>
-            </div>
-
-            <form className="authForm" onSubmit={handleSubmit}>
-              {mode === 'signup' && (
-                <>
-                  <div className="formGrid">
-                    <label className="formField">
-                      <span>Nome</span>
-                      <input className="input" name="firstName" required />
-                    </label>
-                    <label className="formField">
-                      <span>Cognome</span>
-                      <input className="input" name="lastName" required />
-                    </label>
-                  </div>
-                </>
-              )}
-
-              <div className="formGrid">
-                <label className="formField">
-                  <span>Email</span>
-                  <input className="input" type="email" name="email" required />
-                </label>
-                <label className="formField">
-                  <span>Password</span>
-                  <input
-                    className="input"
-                    type="password"
-                    name="password"
-                    required
-                  />
-                </label>
-              </div>
-
-              {mode === 'signup' && (
-                <>
-                  <fieldset className="formField formField--checkboxes">
-                    <legend>Tipologia di utenza</legend>
-                    <label className="checkboxRow">
-                      <input
-                        type="checkbox"
-                        checked={roles.client}
-                        onChange={(event) =>
-                          setRoles((prev) => ({
-                            ...prev,
-                            client: event.target.checked,
-                          }))
-                        }
-                      />
-                      <span>Cliente</span>
-                    </label>
-                    <label className="checkboxRow">
-                      <input
-                        type="checkbox"
-                        checked={roles.restaurant}
-                        onChange={(event) =>
-                          setRoles((prev) => ({
-                            ...prev,
-                            restaurant: event.target.checked,
-                          }))
-                        }
-                      />
-                      <span>Ristoratore</span>
-                    </label>
-                    {!hasAnyRole && (
-                      <p className="helperText">Seleziona almeno una tipologia.</p>
-                    )}
-                  </fieldset>
-
-                  {roles.client && (
-                    <div className="card subtleCard">
-                      <h3 className="miniTitle">Dati cliente</h3>
-                      <label className="formField">
-                        <span>Metodo di pagamento</span>
-                        <input
-                          className="input"
-                          name="payment"
-                          placeholder="Carta di credito o prepagata"
-                        />
-                      </label>
-                      <label className="formField">
-                        <span>Preferenze</span>
-                        <textarea
-                          className="textarea"
-                          name="preferences"
-                          rows={3}
-                          placeholder="Es. offerte speciali, tipologia preferita"
-                        />
-                      </label>
-                    </div>
-                  )}
-
-                  {roles.restaurant && (
-                    <div className="card subtleCard">
-                      <h3 className="miniTitle">Dati ristoratore</h3>
-                      <div className="formGrid">
-                        <label className="formField">
-                          <span>Nome ristorante</span>
-                          <input className="input" name="restaurantName" />
-                        </label>
-                        <label className="formField">
-                          <span>Telefono</span>
-                          <input className="input" name="restaurantPhone" />
-                        </label>
-                      </div>
-                      <div className="formGrid">
-                        <label className="formField">
-                          <span>Partita IVA</span>
-                          <input className="input" name="vat" />
-                        </label>
-                        <label className="formField">
-                          <span>Indirizzo ristorante</span>
-                          <input className="input" name="restaurantAddress" />
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              <div className="authFooter">
-                <button
-                  className="btn btn--primary"
-                  type="submit"
-                  disabled={mode === 'signup' && !hasAnyRole}
-                >
-                  {mode === 'signup' ? 'Create account' : 'Sign in'}
-                </button>
-                <span className="tiny muted">
-                  {mode === 'signup'
-                    ? 'Creiamo un profilo demo per continuare.'
-                    : 'Accesso demo per ora.'}
-                </span>
-              </div>
-            </form>
-          </section>
+          <AuthForm
+            t={t}
+            onSubmit={() => {
+              setJwt(`demo-token-${Date.now()}`)
+              onAuthSuccess()
+            }}
+          />
         </div>
       </main>
     </div>
   )
 }
 
-function Dashboard({ onLogout }) {
+function Dashboard({ onLogout, lang, onLangChange, t }) {
   return (
     <div className="landing dashboard">
-      <header className="navbar">
-        <div className="navInner">
-          <div className="topbar">
-            <div className="brand" aria-label="FastFood">
-              <img
-                className="brand__mark"
-                src="/images/hero-cutout.png"
-                alt=""
-                aria-hidden="true"
-              />
-              <span className="brand__text">FastFood</span>
-            </div>
-            <button className="navLink navLink--button" type="button" onClick={onLogout}>
-              Log out
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar t={t} lang={lang} onLangChange={onLangChange}>
+        <button
+          className="navLink navLink--button"
+          type="button"
+          onClick={onLogout}
+        >
+          {t('common.logout')}
+        </button>
+      </Navbar>
       <main>
         <div className="page">
           <section className="card">
-            <h2>Dashboard</h2>
-            <p className="muted">
-              Sei autenticato. Qui arriveranno i flussi cliente/ristoratore.
-            </p>
+            <h2>{t('dashboard.title')}</h2>
+            <p className="muted">{t('dashboard.body')}</p>
           </section>
         </div>
       </main>
@@ -437,6 +152,16 @@ function App() {
   const [health, setHealth] = useState(null)
   const [error, setError] = useState(null)
   const route = useHashRoute()
+  const [lang, setLang] = useState(getInitialLang)
+  const t = useMemo(() => createT(lang), [lang])
+  const handleLangChange = (next) => setLang(normalizeLang(next))
+
+  useEffect(() => {
+    setStoredLang(lang)
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = lang
+    }
+  }, [lang])
 
   useEffect(() => {
     let cancelled = false
@@ -474,6 +199,9 @@ function App() {
         onAuthSuccess={() => {
           window.location.hash = '#/dashboard'
         }}
+        lang={lang}
+        onLangChange={handleLangChange}
+        t={t}
       />
     )
   }
@@ -485,11 +213,21 @@ function App() {
           clearJwt()
           window.location.hash = '#/'
         }}
+        lang={lang}
+        onLangChange={handleLangChange}
+        t={t}
       />
     )
   }
 
-  if (route === 'app') return <AppStub />
+  if (route === 'app')
+    return (
+      <AppStub
+        lang={lang}
+        onLangChange={handleLangChange}
+        t={t}
+      />
+    )
 
   return (
     <Landing
@@ -498,6 +236,9 @@ function App() {
       onEnterApp={() => {
         window.location.hash = getJwt() ? '#/dashboard' : '#/auth'
       }}
+      lang={lang}
+      onLangChange={handleLangChange}
+      t={t}
     />
   )
 }
