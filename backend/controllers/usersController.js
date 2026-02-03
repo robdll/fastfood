@@ -9,6 +9,15 @@ const isValidObjectId = (id) => ObjectId.isValid(id)
 const isPlainObject = (value) =>
   value !== null && typeof value === 'object' && !Array.isArray(value)
 
+const normalizeStringArray = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => item?.toString().trim()).filter(Boolean)
+  }
+  if (value === undefined || value === null) return []
+  const normalized = value.toString().trim()
+  return normalized ? [normalized] : []
+}
+
 const getUserById = async (req, res) => {
   const { id } = req.params
 
@@ -46,8 +55,17 @@ const createUser = async (req, res) => {
   const { client, db } = await connectToDatabase()
 
   try {
+    const normalizedClientData = isPlainObject(payload.clientData)
+      ? {
+          ...payload.clientData,
+          paymentMethod: payload.clientData.paymentMethod?.toString().trim(),
+          preferences: normalizeStringArray(payload.clientData.preferences),
+        }
+      : payload.clientData
+
     const user = {
       ...payload,
+      clientData: normalizedClientData,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
