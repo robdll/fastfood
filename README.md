@@ -15,7 +15,13 @@ This repo uses **npm workspaces** so there is a **single** `package-lock.json` a
 ├─ package-lock.json
 ├─ backend/
 │  ├─ package.json
-│  └─ server.js
+│  ├─ server.js
+│  ├─ db/
+│  │  ├─ db.js
+│  │  └─ meal.json
+│  └─ scripts/
+│     ├─ check-db.js
+│     └─ seed.js
 └─ frontend/
    ├─ package.json
    ├─ vite.config.js
@@ -56,43 +62,44 @@ Health endpoint:
 curl http://localhost:3000/api/health
 ```
 
-# fastfood (fullstack)
+## Database & seeding
 
-Monorepo with:
-
-- `apps/backend`: Express + TypeScript API
-- `apps/frontend`: Vite + React + TypeScript
-
-## Prerequisites
-
-- Node.js >= 20
-
-## Getting started
-
-If you don't have `pnpm` yet, you can enable it via Corepack:
+Copy `backend/.env.example` to `backend/.env`, then fill the values provided by an admin:
 
 ```bash
-corepack enable
+cp backend/.env.example backend/.env
 ```
 
-Install deps:
+Variables to set:
 
 ```bash
-pnpm install
+MONGODB_DB_NAME=fastfood
+MONGODB_DB_USER=your_user
+MONGODB_DB_PASSWORD=your_password
+MONGODB_CLUSTER_HOST=fastfoodcluster0.ds6zcgz.mongodb.net
+MONGODB_APP_NAME=FastFoodCluster0
 ```
 
-Run both apps in dev:
+You can also set `MONGO_URI` or `MONGODB_URI` directly (takes precedence in this order):
 
 ```bash
-pnpm dev
+MONGO_URI="mongodb+srv://user:password@cluster.mongodb.net/fastfood?retryWrites=true&w=majority&appName=FastFoodCluster0"
+MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/?appName=FastFoodCluster0"
 ```
 
-## Ports
+`backend/db/meal.json` is part of the repo and should not be edited by devs.
 
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:3001`
+To seed the database, run:
 
-## API
+```bash
+npm run seed -w backend
+```
 
-- `GET /api/health` (via backend directly, or via frontend proxy)
+You can test the connection first:
+
+```bash
+npm run db:check -w backend
+```
+
+The seed script clears and repopulates the `meals` collection.
 
