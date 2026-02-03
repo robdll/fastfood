@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import useSignup from '../../hooks/useSignup'
+import useToast from '../../hooks/useToast'
 import './AuthForm.css'
 
 function AuthForm({ onSubmit, t }) {
@@ -7,11 +9,68 @@ function AuthForm({ onSubmit, t }) {
     client: true,
     restaurant: false,
   })
+  const { signup, isSubmitting, submitError } = useSignup()
+  const { showToast } = useToast()
 
   const hasAnyRole = roles.client || roles.restaurant
 
-  const handleSubmit = (event) => {
+  const getFormValues = (formData, fields) => {
+    return fields.reduce((acc, field) => {
+      const raw = (formData.get(field) || '').toString()
+      acc[field] = raw.trim()
+      return acc
+    }, {})
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (mode === 'signup') {
+      if (!hasAnyRole || isSubmitting) return
+
+      const formData = new FormData(event.currentTarget)
+      const baseFields = getFormValues(formData, [
+        'firstName',
+        'lastName',
+        'email',
+      ])
+      const { password } = getFormValues(formData, ['password'])
+
+      const payload = {
+        ...baseFields,
+        password,
+        roles: Object.entries(roles)
+          .filter(([, enabled]) => enabled)
+          .map(([role]) => role),
+      }
+
+      if (roles.client) {
+        payload.clientData = getFormValues(formData, ['payment', 'preferences'])
+      }
+
+      if (roles.restaurant) {
+        const restaurantValues = getFormValues(formData, [
+          'restaurantName',
+          'restaurantPhone',
+          'vat',
+          'restaurantAddress',
+        ])
+        payload.restaurantData = {
+          name: restaurantValues.restaurantName,
+          phone: restaurantValues.restaurantPhone,
+          vat: restaurantValues.vat,
+          address: restaurantValues.restaurantAddress,
+        }
+      }
+
+      const wasSuccessful = await signup(payload, t('auth.signupError'))
+      if (wasSuccessful) {
+        showToast({ type: 'success', message: t('auth.signupToast') })
+        onSubmit()
+      }
+      return
+    }
+
     onSubmit()
   }
 
@@ -164,12 +223,17 @@ function AuthForm({ onSubmit, t }) {
           <button
             className="btn btn--primary"
             type="submit"
-            disabled={mode === 'signup' && !hasAnyRole}
+            disabled={isSubmitting || (mode === 'signup' && !hasAnyRole)}
           >
             {mode === 'signup'
               ? t('auth.submitCreate')
               : t('auth.submitSignIn')}
           </button>
+          {submitError && (
+            <span className="tiny errorText" role="status">
+              {submitError}
+            </span>
+          )}
           <span className="tiny muted">
             {mode === 'signup' ? t('auth.signupNote') : t('auth.signinNote')}
           </span>
