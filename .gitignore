@@ -1,0 +1,31 @@
+node_modules
+dist
+.DS_Store
+.env
+
+node_modules
+dist
+.env
+.env.*
+!.env.example
+
+.DS_Store
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log
+
+# Tooling caches
+.cache
+.turbo
+.eslintcache
+.pnpm-store
+
+# Vite / React
+apps/frontend/.vite
+
+# Backend runtime
+apps/backend/coverage
