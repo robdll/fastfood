@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar/Navbar'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import Modal from '../components/Modal/Modal'
 import Spinner from '../components/Spinner/Spinner'
+import AddressPicker from '../components/AddressPicker/AddressPicker'
 import useToast from '../hooks/useToast'
 import { updateUser } from '../services/users'
 import { getJwt } from '../utils/auth'
@@ -86,6 +87,10 @@ function Settings({
   const handleChange = (field) => (event) => {
     const value = event.target.value
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleAddressChange = (value) => {
+    setForm((prev) => ({ ...prev, restaurantAddress: value }))
   }
 
   const handlePreferenceChange = (field) => (event) => {
@@ -388,15 +393,18 @@ function Settings({
                           onChange={handleChange('vat')}
                         />
                       </label>
-                      <label className="formField">
-                        <span>{t('auth.restaurantAddress')}</span>
-                        <input
-                          className="input"
-                          name="restaurantAddress"
+                      <div className="formField formField--full">
+                        <label htmlFor="restaurantAddress">
+                          {t('auth.restaurantAddress')}
+                        </label>
+                        <AddressPicker
+                          inputId="restaurantAddress"
                           value={form.restaurantAddress}
-                          onChange={handleChange('restaurantAddress')}
+                          onChange={handleAddressChange}
+                          t={t}
+                          lang={lang}
                         />
-                      </label>
+                      </div>
                     </div>
                   </div>
                 )}

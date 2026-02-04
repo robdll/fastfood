@@ -154,12 +154,10 @@ function ClientRestaurantMenu({
               <div>
                 <h2>{restaurant?.name ?? t('clientMenu.title')}</h2>
                 <p className="muted">
-                  {restaurant
-                    ? t('clientMenu.body', { address: restaurant.address })
-                    : t('clientMenu.notFound')}
+                  {restaurant ? t('clientMenu.body') : t('clientMenu.notFound')}
                 </p>
               </div>
-              <div className="menuActions">
+              <div className="menuActions menuActions--right">
                 <Link className="btn btn--secondary" to="/dashboard/client/cart">
                   {t('clientMenu.goToCart')}
                 </Link>

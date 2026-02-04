@@ -54,7 +54,6 @@ function ClientRestaurants({
       restaurants.map((restaurant) => ({
         id: restaurant._id ?? restaurant.id,
         name: restaurant.name ?? '—',
-        address: restaurant.address ?? '—',
         phone: restaurant.phone ?? '—',
       })),
     [restaurants]
@@ -97,7 +96,6 @@ function ClientRestaurants({
                 <thead>
                   <tr>
                     <th>{t('clientRestaurants.tableName')}</th>
-                    <th>{t('clientRestaurants.tableAddress')}</th>
                     <th>{t('clientRestaurants.tablePhone')}</th>
                     <th>{t('clientRestaurants.tableActions')}</th>
                   </tr>
@@ -105,7 +103,7 @@ function ClientRestaurants({
                 <tbody>
                   {!isLoading && rows.length === 0 ? (
                     <tr>
-                      <td className="menuEmpty" colSpan={4}>
+                      <td className="menuEmpty" colSpan={3}>
                         {t('clientRestaurants.empty')}
                       </td>
                     </tr>
@@ -119,7 +117,6 @@ function ClientRestaurants({
                         }
                       >
                         <td>{restaurant.name}</td>
-                        <td>{restaurant.address}</td>
                         <td>{restaurant.phone}</td>
                         <td className="menuTable__actions">
                           <button

@@ -1,0 +1,55 @@
+.addressPicker {
+  display: grid;
+  gap: 10px;
+}
+
+.addressPickerInputRow {
+  display: grid;
+  gap: 10px;
+}
+
+.addressPickerButton {
+  justify-self: flex-start;
+}
+
+.addressPickerResults {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.addressPickerResult {
+  width: 100%;
+  text-align: left;
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: var(--paper);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.addressPickerResult:hover,
+.addressPickerResult:focus-visible {
+  background: var(--primary-yellow);
+}
+
+.addressPickerMap {
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.addressPickerLeaflet {
+  width: 100%;
+  height: 240px;
+}
+
+@media (min-width: 768px) {
+  .addressPickerInputRow {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}

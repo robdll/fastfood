@@ -150,6 +150,10 @@
   flex-wrap: wrap;
 }
 
+.menuActions--right {
+  margin-left: auto;
+}
+
 .menuError {
   color: var(--primary-red);
   font-weight: 700;
