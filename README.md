@@ -2,7 +2,7 @@
 
 Monolith repository with:
 
-- `backend/`: Express server (JavaScript, CommonJS)
+- `backend/`: Express server (JavaScript, ESM)
 - `frontend/`: Vite + React app (JavaScript)
 
 This repo uses **npm workspaces** so there is a **single** `package-lock.json` at the top level.
@@ -14,19 +14,29 @@ This repo uses **npm workspaces** so there is a **single** `package-lock.json` a
 ├─ package.json
 ├─ package-lock.json
 ├─ backend/
-│  ├─ package.json
-│  ├─ server.js
+│  ├─ .env.example
+│  ├─ controllers/
 │  ├─ db/
-│  │  ├─ db.js
-│  │  └─ meal.json
-│  └─ scripts/
-│     ├─ check-db.js
-│     └─ seed.js
+│  ├─ middleware/
+│  ├─ models/
+│  ├─ routes/
+│  ├─ scripts/
+│  ├─ utils/
+│  ├─ package.json
+│  └─ server.js
 └─ frontend/
+   ├─ public/
+   ├─ src/
+   │  ├─ components/
+   │  ├─ hooks/
+   │  ├─ routes/
+   │  ├─ services/
+   │  ├─ views/
+   │  ├─ App.jsx
+   │  └─ main.jsx
    ├─ package.json
    ├─ vite.config.js
-   └─ src/
-      └─ App.jsx
+   └─ index.html
 ```
 
 ## Getting started
@@ -78,9 +88,14 @@ MONGODB_DB_USER=your_user
 MONGODB_DB_PASSWORD=your_password
 MONGODB_CLUSTER_HOST=fastfoodcluster0.ds6zcgz.mongodb.net
 MONGODB_APP_NAME=FastFoodCluster0
+JWT_SECRET=replace_with_secure_secret
+JWT_EXPIRES_IN=30d
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-You can also set `MONGODB_URI` directly (takes precedence in this order):
+You can also set `MONGODB_URI` directly (takes precedence over the parts above):
 
 ```bash
 MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/?appName=FastFoodCluster0"
