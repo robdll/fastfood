@@ -108,4 +108,31 @@ const updateMenuItem = async (
   return response.json()
 }
 
-export { addMenuItems, getMenuByRestaurantId, updateMenuItem }
+const deleteMenuItem = async (
+  restaurantId,
+  mealId,
+  token,
+  fallbackMessage = 'Unable to remove the dish.'
+) => {
+  const response = await fetch(`/api/menus/${restaurantId}/items/${mealId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    let message = fallbackMessage
+    try {
+      const data = await response.json()
+      if (data?.error) message = data.error
+    } catch (error) {
+      console.error('Menu item delete response error parsing failed', error)
+    }
+    throw new Error(message)
+  }
+
+  return response.json()
+}
+
+export { addMenuItems, deleteMenuItem, getMenuByRestaurantId, updateMenuItem }

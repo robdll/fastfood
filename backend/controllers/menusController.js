@@ -376,4 +376,51 @@ const updateMenuItem = async (req, res) => {
   }
 }
 
-export { addMenuItems, getMenuByRestaurantId, updateMenuItem }
+const deleteMenuItem = async (req, res) => {
+  const { restaurantId, mealId } = req.params
+
+  if (!restaurantId || !mealId) {
+    res.status(400).json({ error: 'Restaurant id and meal id are required.' })
+    return
+  }
+
+  if (req.auth?.userId && req.auth.userId !== restaurantId) {
+    res.status(403).json({ error: 'Forbidden.' })
+    return
+  }
+
+  const { client, db } = await connectToDatabase()
+
+  try {
+    const menu = await ensureMenuForRestaurant(db, restaurantId)
+    const items = menu.items ?? []
+    const targetIndex = findMenuItemIndex(items, mealId)
+    if (targetIndex < 0) {
+      res.status(404).json({ error: 'Menu item not found.' })
+      return
+    }
+
+    const updatedItems = items.filter((_, index) => index !== targetIndex)
+    const updatedAt = new Date()
+
+    await db.collection(COLLECTION_NAME).updateOne(
+      { _id: menu._id },
+      {
+        $set: {
+          items: updatedItems,
+          updatedAt,
+        },
+      }
+    )
+
+    res.json({
+      ...menu,
+      items: updatedItems,
+      updatedAt,
+    })
+  } finally {
+    await client.close()
+  }
+}
+
+export { addMenuItems, deleteMenuItem, getMenuByRestaurantId, updateMenuItem }

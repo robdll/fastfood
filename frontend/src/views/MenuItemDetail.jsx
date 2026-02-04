@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
+import Modal from '../components/Modal/Modal'
 import MenuItemDetailCard from '../components/MenuItemDetailCard/MenuItemDetailCard'
 import Navbar from '../components/Navbar/Navbar'
 import mealCategories from '../constants/mealCategories'
 import useToast from '../hooks/useToast'
 import { getMeals } from '../services/meals'
-import { getMenuByRestaurantId, updateMenuItem } from '../services/menus'
+import {
+  deleteMenuItem,
+  getMenuByRestaurantId,
+  updateMenuItem,
+} from '../services/menus'
 import { getMealIngredients } from '../utils/meals'
 
 function MenuItemDetail({
@@ -34,6 +39,8 @@ function MenuItemDetail({
   const [removedIngredients, setRemovedIngredients] = useState([])
   const [editPhoto, setEditPhoto] = useState(null)
   const [editPhotoPreview, setEditPhotoPreview] = useState(null)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isDeletingItem, setIsDeletingItem] = useState(false)
 
   useEffect(() => {
     if (!token || !restaurantId) {
@@ -295,6 +302,32 @@ function MenuItemDetail({
     }
   }
 
+  const handleDeleteConfirm = async () => {
+    if (!menuItem || !restaurantId || !token || isDeletingItem) return
+    setIsDeletingItem(true)
+    try {
+      await deleteMenuItem(
+        restaurantId,
+        menuItem.mealId ?? menuItem.id,
+        token,
+        t('dashboard.menuDeleteError')
+      )
+      showToast({ type: 'success', message: t('dashboard.menuDeleteSuccess') })
+      setIsDeleteOpen(false)
+      navigate('/dashboard/restaurant')
+    } catch (error) {
+      const message = error?.message ?? t('dashboard.menuDeleteError')
+      showToast({ type: 'error', message })
+    } finally {
+      setIsDeletingItem(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    if (isDeletingItem) return
+    setIsDeleteOpen(false)
+  }
+
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -346,9 +379,17 @@ function MenuItemDetail({
               originValue: menuItem ? getOriginLabel(menuItem.origin) : '',
               showOrigin: true,
               isSubmitting: isUpdatingItem,
+              secondaryActionLabel: isDeletingItem
+                ? t('dashboard.menuDetailDeleteSaving')
+                : t('dashboard.menuDetailDeleteAction'),
+              onSecondaryAction: () => setIsDeleteOpen(true),
+              secondaryActionVariant: 'danger',
+              secondaryActionDisabled: !menuItem,
+              secondaryActionIsLoading: isDeletingItem,
               submitLabel: isUpdatingItem
                 ? t('dashboard.menuDetailUpdateSaving')
                 : t('dashboard.menuDetailUpdateAction'),
+              submitVariant: 'secondary',
               disableSubmit: !canUpdateItem,
               onSubmit: handleUpdateMenuItem,
               showEmptyCategory,
@@ -356,6 +397,16 @@ function MenuItemDetail({
           />
         </div>
       </main>
+      <Modal
+        isOpen={isDeleteOpen}
+        title={t('dashboard.menuDeleteTitle')}
+        description={t('dashboard.menuDeleteDescription')}
+        submitLabel={t('dashboard.menuDeleteConfirm')}
+        cancelLabel={t('dashboard.menuDeleteCancel')}
+        submitVariant="danger"
+        onSubmit={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }

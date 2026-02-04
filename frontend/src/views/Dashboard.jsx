@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
+import Modal from '../components/Modal/Modal'
 import MenuTable from '../components/MenuTable/MenuTable'
 import Navbar from '../components/Navbar/Navbar'
 import Spinner from '../components/Spinner/Spinner'
-import { getMenuByRestaurantId } from '../services/menus'
+import useToast from '../hooks/useToast'
+import { deleteMenuItem, getMenuByRestaurantId } from '../services/menus'
 
 function Dashboard({
   variant = 'client',
@@ -20,6 +22,7 @@ function Dashboard({
   const isClient = variant === 'client'
   const restaurantId = user?._id ?? null
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const title = isClient
     ? t('dashboard.clientTitle')
     : t('dashboard.restaurantTitle')
@@ -32,6 +35,9 @@ function Dashboard({
   const [menu, setMenu] = useState(null)
   const [menuError, setMenuError] = useState(null)
   const [isMenuLoading, setIsMenuLoading] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isDeletingItem, setIsDeletingItem] = useState(false)
+  const [pendingDelete, setPendingDelete] = useState(null)
 
   useEffect(() => {
     if (isClient) return undefined
@@ -118,6 +124,40 @@ function Dashboard({
     origin === 'catalog'
       ? t('dashboard.menuOriginCatalog')
       : t('dashboard.menuOriginCustom')
+
+  const handleDeleteRequest = (item) => {
+    if (isDeletingItem) return
+    setPendingDelete(item)
+    setIsDeleteOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!pendingDelete || !restaurantId || !token) return
+    setIsDeletingItem(true)
+    try {
+      const updated = await deleteMenuItem(
+        restaurantId,
+        pendingDelete.mealId ?? pendingDelete.id,
+        token,
+        t('dashboard.menuDeleteError')
+      )
+      setMenu(updated)
+      setIsDeleteOpen(false)
+      setPendingDelete(null)
+      showToast({ type: 'success', message: t('dashboard.menuDeleteSuccess') })
+    } catch (error) {
+      const message = error?.message ?? t('dashboard.menuDeleteError')
+      showToast({ type: 'error', message })
+    } finally {
+      setIsDeletingItem(false)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    if (isDeletingItem) return
+    setIsDeleteOpen(false)
+    setPendingDelete(null)
+  }
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -182,12 +222,26 @@ function Dashboard({
                     `/dashboard/restaurant/menu/${item.mealId ?? item.id}`
                   )
                 }
+                onDelete={handleDeleteRequest}
+                deleteLabel={t('dashboard.menuDeleteAction')}
+                isDeleting={isDeletingItem}
+                deletingId={pendingDelete?.id ?? pendingDelete?.mealId ?? null}
                 t={t}
               />
             </section>
           )}
         </div>
       </main>
+      <Modal
+        isOpen={isDeleteOpen}
+        title={t('dashboard.menuDeleteTitle')}
+        description={t('dashboard.menuDeleteDescription')}
+        submitLabel={t('dashboard.menuDeleteConfirm')}
+        cancelLabel={t('dashboard.menuDeleteCancel')}
+        submitVariant="danger"
+        onSubmit={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   )
 }

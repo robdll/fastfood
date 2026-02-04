@@ -8,6 +8,7 @@ import { requireAuth, requireSelf } from '../middleware/auth.js'
 import { getMeals } from '../controllers/mealsController.js'
 import {
   addMenuItems,
+  deleteMenuItem,
   getMenuByRestaurantId,
   updateMenuItem,
 } from '../controllers/menusController.js'
@@ -38,6 +39,11 @@ router.patch(
   requireAuth,
   upload.any(),
   updateMenuItem
+)
+router.delete(
+  '/api/menus/:restaurantId/items/:mealId',
+  requireAuth,
+  deleteMenuItem
 )
 router.post('/api/users', createUser)
 router.put('/api/users/:id', requireAuth, requireSelf, updateUser)

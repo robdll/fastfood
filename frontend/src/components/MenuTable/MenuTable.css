@@ -56,3 +56,44 @@
 .menuRow--selected {
   background: rgba(239, 200, 86, 0.35);
 }
+
+.menuTable__actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.menuTable__actionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--primary-red);
+  color: var(--paper);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.menuTable__actionBtn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.menuTable__actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.menuTable__actionBtn:focus-visible,
+.menuTable__actionBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.menuTable__actionText {
+  font-size: 11px;
+  font-weight: 700;
+}

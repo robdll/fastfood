@@ -24,8 +24,14 @@ function MenuItemForm({
   showOrigin = false,
   isSubmitting,
   submitLabel,
+  submitVariant = 'primary',
   disableSubmit,
   onSubmit,
+  secondaryActionLabel,
+  onSecondaryAction,
+  secondaryActionVariant = 'danger',
+  secondaryActionDisabled,
+  secondaryActionIsLoading,
   showEmptyCategory = false,
 }) {
   const handleIngredientToggle = (name) => {
@@ -207,21 +213,40 @@ function MenuItemForm({
             )}
           </label>
         </div>
-        <button
-          className="btn btn--primary menuDetail__area--actions"
-          type="button"
-          onClick={onSubmit}
-          disabled={disableSubmit || isSubmitting}
-        >
-          {isSubmitting ? (
-            <Spinner
-              className="spinner--button"
-              label={t('common.loading')}
-            />
-          ) : (
-            submitLabel
+        <div className="menuDetail__actions menuDetail__area--actions">
+          {onSecondaryAction && (
+            <button
+              className={`btn btn--${secondaryActionVariant}`}
+              type="button"
+              onClick={onSecondaryAction}
+              disabled={secondaryActionDisabled || secondaryActionIsLoading}
+            >
+              {secondaryActionIsLoading ? (
+                <Spinner
+                  className="spinner--button"
+                  label={t('common.loading')}
+                />
+              ) : (
+                secondaryActionLabel
+              )}
+            </button>
           )}
-        </button>
+          <button
+            className={`btn btn--${submitVariant}`}
+            type="button"
+            onClick={onSubmit}
+            disabled={disableSubmit || isSubmitting}
+          >
+            {isSubmitting ? (
+              <Spinner
+                className="spinner--button"
+                label={t('common.loading')}
+              />
+            ) : (
+              submitLabel
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )

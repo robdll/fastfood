@@ -49,6 +49,7 @@
 
 .btn--secondary {
   background: var(--primary-gold);
+  color: var(--ink);
 }
 
 .btn--danger {

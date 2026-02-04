@@ -35,6 +35,11 @@
   align-self: flex-end;
 }
 
+.menuDetail__actions {
+  display: grid;
+  gap: 10px;
+}
+
 .menuDetail__content {
   display: grid;
   gap: 18px;
