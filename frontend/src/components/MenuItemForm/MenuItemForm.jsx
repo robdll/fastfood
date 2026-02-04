@@ -1,3 +1,6 @@
+import Spinner from '../Spinner/Spinner'
+import './MenuItemForm.css'
+
 function MenuItemForm({
   t,
   imageUrl,
@@ -210,7 +213,14 @@ function MenuItemForm({
           onClick={onSubmit}
           disabled={disableSubmit || isSubmitting}
         >
-          {submitLabel}
+          {isSubmitting ? (
+            <Spinner
+              className="spinner--button"
+              label={t('common.loading')}
+            />
+          ) : (
+            submitLabel
+          )}
         </button>
       </div>
     </div>
