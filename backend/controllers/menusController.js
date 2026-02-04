@@ -175,12 +175,6 @@ const addMenuItems = async (req, res) => {
       return
     }
 
-    const missingPhotos = pendingIds.filter((id) => !photoByMealId.has(id))
-    if (missingPhotos.length > 0) {
-      res.status(400).json({ error: 'Photo is required for each menu item.' })
-      return
-    }
-
     const objectIds = pendingIds
       .filter((id) => ObjectId.isValid(id))
       .map((id) => new ObjectId(id))
@@ -194,7 +188,7 @@ const addMenuItems = async (req, res) => {
     const meals = await db
       .collection('meals')
       .find(query)
-      .project({ strMeal: 1, idMeal: 1, strCategory: 1 })
+      .project({ strMeal: 1, idMeal: 1, strCategory: 1, strMealThumb: 1 })
       .toArray()
 
     const mealById = new Map()
@@ -231,6 +225,11 @@ const addMenuItems = async (req, res) => {
         })
         photoUrl = uploadResult?.secure_url ?? null
         photoPublicId = uploadResult?.public_id ?? null
+      } else if (meal?.strMealThumb) {
+        photoUrl = meal.strMealThumb
+      } else {
+        res.status(400).json({ error: 'Photo is required for each menu item.' })
+        return
       }
 
       itemsToAdd.push({

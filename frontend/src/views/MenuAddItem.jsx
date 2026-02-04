@@ -173,8 +173,12 @@ function MenuAddItem({
     })
   }
 
+  const hasDefaultPhoto = Boolean(selectedMeal?.strMealThumb)
   const isSelectionValid =
-    selectedMeal && editPrice !== '' && editPrice !== null && editPhoto
+    selectedMeal &&
+    editPrice !== '' &&
+    editPrice !== null &&
+    (editPhoto || hasDefaultPhoto)
 
   const handleSaveMeal = async () => {
     if (!selectedMeal || !isSelectionValid || isSavingMeal) return
@@ -213,6 +217,7 @@ function MenuAddItem({
         id: meal?._id?.toString() ?? meal?.idMeal?.toString() ?? '',
         name: meal?.strMeal ?? '—',
         category: meal?.strCategory ?? '—',
+        imageUrl: meal?.strMealThumb ?? null,
         raw: meal,
       }))
       .filter((meal) => meal.id && !existingMealIds.has(meal.id))
@@ -273,6 +278,7 @@ function MenuAddItem({
                 <table className="menuTable">
                   <thead>
                     <tr>
+                      <th>{t('dashboard.menuTableImage')}</th>
                       <th>{t('dashboard.menuTableName')}</th>
                       <th>{t('dashboard.menuTableType')}</th>
                       <th>{t('dashboard.menuAddStatus')}</th>
@@ -288,6 +294,15 @@ function MenuAddItem({
                             isAlreadyAdded ? 'menuRow--disabled' : ''
                           } ${isSelected ? 'menuRow--selected' : ''}`}
                         >
+                          <td>
+                            <div className="menuThumb">
+                              {meal.imageUrl ? (
+                                <img src={meal.imageUrl} alt={meal.name} />
+                              ) : (
+                                <span>{t('dashboard.menuNoImage')}</span>
+                              )}
+                            </div>
+                          </td>
                           <td>{meal.name}</td>
                           <td>{meal.category}</td>
                           <td>
@@ -312,7 +327,7 @@ function MenuAddItem({
                         </tr>
                         {isSelected && (
                           <tr className="menuRow__accordion">
-                            <td colSpan={3}>
+                            <td colSpan={4}>
                               <div className="menuAccordion">
                                 <div className="menuHeader">
                                   <div>
@@ -358,7 +373,7 @@ function MenuAddItem({
                                         {t('dashboard.menuAddMissingPrice')}
                                       </p>
                                     )}
-                                    {!editPhoto && (
+                                    {!editPhoto && !hasDefaultPhoto && (
                                       <p className="menuError">
                                         {t('dashboard.menuAddMissingPhoto')}
                                       </p>
