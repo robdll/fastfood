@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'
 
 import { connectToDatabase } from '../db/db.js'
-import { isPlainObject } from '../utils/utils.js'
+import { getFormValues, isPlainObject } from '../utils/utils.js'
 
 const COLLECTION_NAME = 'users'
 
@@ -14,6 +14,15 @@ const normalizeStringArray = (value) => {
   if (value === undefined || value === null) return []
   const normalized = value.toString().trim()
   return normalized ? [normalized] : []
+}
+
+const normalizeRestaurantData = (value) => {
+  if (!isPlainObject(value)) return value
+  const normalized = getFormValues(value, ['name', 'phone', 'vat', 'address'])
+  return {
+    ...value,
+    ...normalized,
+  }
 }
 
 const getUserById = async (req, res) => {
@@ -61,7 +70,8 @@ const createUser = async (req, res) => {
     const normalizedClientData = isPlainObject(payload.clientData)
       ? {
           ...payload.clientData,
-          paymentMethod: payload.clientData.paymentMethod?.toString().trim(),
+          paymentMethod: getFormValues(payload.clientData, ['paymentMethod'])
+            .paymentMethod,
           preferences: normalizeStringArray(payload.clientData.preferences),
         }
       : payload.clientData
@@ -105,6 +115,21 @@ const updateUser = async (req, res) => {
     const updateDoc = {
       ...updates,
       updatedAt: new Date(),
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'clientData')) {
+      updateDoc.clientData = isPlainObject(updates.clientData)
+        ? {
+            ...updates.clientData,
+            paymentMethod: getFormValues(updates.clientData, ['paymentMethod'])
+              .paymentMethod,
+            preferences: normalizeStringArray(updates.clientData.preferences),
+          }
+        : updates.clientData
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'restaurantData')) {
+      updateDoc.restaurantData = normalizeRestaurantData(updates.restaurantData)
     }
 
     const result = await db
