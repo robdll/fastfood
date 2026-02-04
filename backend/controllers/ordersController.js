@@ -1,11 +1,13 @@
 import { connectToDatabase } from '../db/db.js'
 import {
   countPreparationByRestaurantIds,
+  findOrderById,
   findOrdersByClientId,
   insertOrders,
+  updateOrderStatusById,
 } from '../models/ordersDao.js'
 
-const ORDER_STATUSES = ['preparation', 'readyForPickup', 'delivered']
+const ORDER_STATUSES = ['ordered', 'preparation', 'readyForPickup', 'delivered']
 
 const sanitizeItems = (items) => {
   if (!Array.isArray(items)) return []
@@ -44,7 +46,7 @@ const createOrders = async (req, res) => {
     }
     const status = ORDER_STATUSES.includes(order?.status)
       ? order.status
-      : 'preparation'
+      : 'ordered'
 
     orderDocs.push({
       clientId,
@@ -122,4 +124,69 @@ const getPreparationCounts = async (req, res) => {
   }
 }
 
-export { createOrders, getOrders, getPreparationCounts }
+const canRestaurantUpdate = (order, userId, nextStatus) => {
+  if (!order || !userId || order.restaurantId !== userId) return false
+  if (nextStatus === 'preparation') {
+    return order.status === 'ordered'
+  }
+  if (nextStatus === 'readyForPickup') {
+    return order.status === 'preparation' && order.deliveryOption === 'delivery'
+  }
+  if (nextStatus === 'delivered') {
+    return order.status === 'preparation' && order.deliveryOption !== 'delivery'
+  }
+  return false
+}
+
+const canClientUpdate = (order, userId, nextStatus) => {
+  if (!order || !userId || order.clientId !== userId) return false
+  if (nextStatus !== 'delivered') return false
+  return order.status === 'readyForPickup' && order.deliveryOption === 'delivery'
+}
+
+const updateOrderStatus = async (req, res) => {
+  const userId = req.auth?.userId
+  const roles = req.auth?.roles ?? []
+  const { id } = req.params
+  const nextStatus = req.body?.status
+
+  if (!userId) {
+    res.status(401).json({ error: 'Authorization token is required.' })
+    return
+  }
+  if (!id) {
+    res.status(400).json({ error: 'Order id is required.' })
+    return
+  }
+  if (!ORDER_STATUSES.includes(nextStatus)) {
+    res.status(400).json({ error: 'Invalid order status.' })
+    return
+  }
+
+  const { client, db } = await connectToDatabase()
+  try {
+    const order = await findOrderById(db, id)
+    if (!order) {
+      res.status(404).json({ error: 'Order not found.' })
+      return
+    }
+
+    const isRestaurant = roles.includes('restaurant')
+    const isClient = roles.includes('client')
+    const allowed =
+      (isRestaurant && canRestaurantUpdate(order, userId, nextStatus)) ||
+      (isClient && canClientUpdate(order, userId, nextStatus))
+
+    if (!allowed) {
+      res.status(403).json({ error: 'Forbidden.' })
+      return
+    }
+
+    const updated = await updateOrderStatusById(db, id, nextStatus, new Date())
+    res.json(updated)
+  } finally {
+    await client.close()
+  }
+}
+
+export { createOrders, getOrders, getPreparationCounts, updateOrderStatus }

@@ -26,6 +26,7 @@ import {
   createOrders,
   getOrders,
   getPreparationCounts,
+  updateOrderStatus,
 } from '../controllers/ordersController.js'
 
 const router = Router()
@@ -62,6 +63,7 @@ router.put('/api/users/:id', requireAuth, requireSelf, updateUser)
 router.delete('/api/users/:id', requireAuth, requireSelf, deleteUser)
 router.post('/api/orders', requireAuth, createOrders)
 router.get('/api/orders', requireAuth, getOrders)
+router.patch('/api/orders/:id/status', requireAuth, updateOrderStatus)
 router.get('/api/orders/preparation-counts', requireAuth, getPreparationCounts)
 
 export default router

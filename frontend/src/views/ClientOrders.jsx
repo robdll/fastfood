@@ -110,7 +110,9 @@ function ClientOrders({
                   const orderId = resolveOrderId(order)
                   const orderKey = orderId ?? index
                   const deliveryOption = order?.deliveryOption ?? 'pickup'
-                  const canMarkDelivered = order?.status === 'readyForPickup'
+                  const canMarkDelivered =
+                    deliveryOption === 'delivery' &&
+                    order?.status === 'readyForPickup'
                   const action = canMarkDelivered ? (
                     <button
                       className="btn btn--secondary orderCard__actionBtn"

@@ -373,7 +373,7 @@ function ClientCart({
         return {
           id: createOrderId(),
           createdAt,
-          status: 'preparation',
+          status: 'ordered',
           restaurantId: group.restaurantId,
           restaurantName: group.restaurantName,
           restaurantAddress: group.restaurantAddress,

@@ -82,9 +82,11 @@ function RestaurantOrders({
     const updated = updateOrderStatus(orderId, nextStatus)
     setOrders(updated)
     const messageKey =
-      nextStatus === 'delivered'
-        ? 'restaurantOrders.statusUpdatedDelivered'
-        : 'restaurantOrders.statusUpdatedReadyForPickup'
+      nextStatus === 'preparation'
+        ? 'restaurantOrders.statusUpdatedPreparation'
+        : nextStatus === 'delivered'
+          ? 'restaurantOrders.statusUpdatedDelivered'
+          : 'restaurantOrders.statusUpdatedReadyForPickup'
     showToast({
       type: 'success',
       message: t(messageKey),
@@ -128,21 +130,33 @@ function RestaurantOrders({
                 {sortedOrders.map((order, index) => {
                   const orderId = resolveOrderId(order)
                   const orderKey = orderId ?? index
+                  const isOrdered = order?.status === 'ordered'
                   const isPreparation = order?.status === 'preparation'
                   const deliveryOption = order?.deliveryOption ?? 'pickup'
-                  const nextStatus =
-                    deliveryOption === 'delivery' ? 'readyForPickup' : 'delivered'
-                  const actionLabel =
-                    deliveryOption === 'delivery'
-                      ? t('restaurantOrders.markReady')
-                      : t('restaurantOrders.markDelivered')
-                  const action = isPreparation ? (
+                  const action = isOrdered ? (
                     <button
                       className="btn btn--secondary orderCard__actionBtn"
                       type="button"
-                      onClick={() => handleUpdateStatus(orderId, nextStatus)}
+                      onClick={() => handleUpdateStatus(orderId, 'preparation')}
                     >
-                      {actionLabel}
+                      {t('restaurantOrders.markPreparation')}
+                    </button>
+                  ) : isPreparation ? (
+                    <button
+                      className="btn btn--secondary orderCard__actionBtn"
+                      type="button"
+                      onClick={() =>
+                        handleUpdateStatus(
+                          orderId,
+                          deliveryOption === 'delivery'
+                            ? 'readyForPickup'
+                            : 'delivered'
+                        )
+                      }
+                    >
+                      {deliveryOption === 'delivery'
+                        ? t('restaurantOrders.markReady')
+                        : t('restaurantOrders.markDelivered')}
                     </button>
                   ) : null
                   const metaItems = [
