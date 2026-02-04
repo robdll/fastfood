@@ -1,16 +1,16 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import Navbar from '../components/Navbar/Navbar'
+import Spinner from '../components/Spinner/Spinner'
 import useToast from '../hooks/useToast'
-import {
-  getRestaurantById,
-  getRestaurantMenuById,
-} from '../data/mockRestaurants'
+import { getMenuByRestaurantId } from '../services/menus'
+import { getRestaurantById } from '../services/restaurants'
 import { addCartItem } from '../utils/cart'
 import '../components/MenuTable/MenuTable.css'
 
 function ClientRestaurantMenu({
+  token,
   onLogout,
   canSwitch,
   switchPath,
@@ -21,15 +21,72 @@ function ClientRestaurantMenu({
   const { restaurantId } = useParams()
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const [restaurant, setRestaurant] = useState(null)
+  const [menu, setMenu] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [menuError, setMenuError] = useState(null)
 
-  const restaurant = useMemo(
-    () => getRestaurantById(restaurantId),
-    [restaurantId]
-  )
-  const menuItems = useMemo(
-    () => getRestaurantMenuById(restaurantId),
-    [restaurantId]
-  )
+  useEffect(() => {
+    if (!token || !restaurantId) return undefined
+    let cancelled = false
+
+    async function loadRestaurantMenu() {
+      setIsLoading(true)
+      setMenuError(null)
+      try {
+        const [restaurantData, menuData] = await Promise.all([
+          getRestaurantById(restaurantId, token, t('clientMenu.error')),
+          getMenuByRestaurantId(restaurantId, token, t('clientMenu.menuError')),
+        ])
+        if (!cancelled) {
+          setRestaurant(restaurantData)
+          setMenu(menuData)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setRestaurant(null)
+          setMenu(null)
+          setMenuError(error?.message ?? t('clientMenu.error'))
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false)
+      }
+    }
+
+    loadRestaurantMenu()
+    return () => {
+      cancelled = true
+    }
+  }, [restaurantId, t, token])
+
+  const menuItems = useMemo(() => {
+    const items = menu?.items ?? []
+    return items.map((item, index) => {
+      const origin =
+        item?.origin ??
+        item?.meal?.origin ??
+        item?.mealOrigin ??
+        item?.source ??
+        (item?.mealId || item?.meal ? 'catalog' : 'custom')
+      const name =
+        item?.name ??
+        item?.title ??
+        item?.label ??
+        item?.mealName ??
+        '—'
+      const price = item?.price ?? item?.cost ?? item?.amount ?? null
+      const imageUrl =
+        item?.photoUrl ?? item?.photo?.url ?? item?.imageUrl ?? item?.image ?? null
+      return {
+        id: item?._id ?? item?.mealId ?? `${origin}-${index}`,
+        name,
+        price,
+        origin,
+        imageUrl,
+        category: item?.category ?? item?.mealCategory ?? null,
+      }
+    })
+  }, [menu])
 
   const formatPrice = (value) => {
     if (value === null || value === undefined || value === '') return '—'
@@ -55,7 +112,7 @@ function ClientRestaurantMenu({
   const handleAddToCart = (item) => {
     if (!restaurant) return
     addCartItem({
-      restaurantId: restaurant.id,
+      restaurantId: restaurant._id ?? restaurant.id,
       restaurantName: restaurant.name,
       itemId: item.id,
       name: item.name,
@@ -76,7 +133,11 @@ function ClientRestaurantMenu({
         items={[
           { label: t('dashboard.clientTitle'), to: '/dashboard/client' },
           { label: t('clientRestaurants.title'), to: '/dashboard/client/restaurants' },
-          { label: restaurant?.name ?? t('clientMenu.unknownRestaurant') },
+          {
+            label: isLoading
+              ? t('clientMenu.loading')
+              : restaurant?.name ?? t('clientMenu.unknownRestaurant'),
+          },
         ]}
         userMenu={{
           settingsPath: '/settings',
@@ -104,6 +165,15 @@ function ClientRestaurantMenu({
                 </Link>
               </div>
             </div>
+            {isLoading && (
+              <p className="muted">
+                <Spinner
+                  className="spinner--inline"
+                  label={t('clientMenu.loading')}
+                />
+              </p>
+            )}
+            {menuError && <p className="menuError">{menuError}</p>}
             <div className="menuTableWrapper">
               <table className="menuTable">
                 <thead>
@@ -117,7 +187,7 @@ function ClientRestaurantMenu({
                   </tr>
                 </thead>
                 <tbody>
-                  {menuItems.length === 0 ? (
+                  {!isLoading && menuItems.length === 0 ? (
                     <tr>
                       <td className="menuEmpty" colSpan={6}>
                         {t('clientMenu.empty')}

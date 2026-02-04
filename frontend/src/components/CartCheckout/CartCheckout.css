@@ -4,6 +4,11 @@
   gap: 12px;
 }
 
+.cartForm h3,
+.cartForm p {
+  margin: 0;
+}
+
 .cartForm__row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

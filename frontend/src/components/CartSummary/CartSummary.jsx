@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import '../MenuTable/MenuTable.css'
 import './CartSummary.css'
 
-function CartSummary({ items, t, formatPrice }) {
+function CartSummary({ items, t, formatPrice, onIncrease, onDecrease }) {
   const subtotal = useMemo(
     () =>
       items.reduce(
@@ -22,9 +22,9 @@ function CartSummary({ items, t, formatPrice }) {
             <tr>
               <th>{t('clientCart.tableRestaurant')}</th>
               <th>{t('clientCart.tableItem')}</th>
-              <th>{t('clientCart.tableQty')}</th>
-              <th>{t('clientCart.tablePrice')}</th>
-              <th>{t('clientCart.tableTotal')}</th>
+              <th className="cartTableQty">{t('clientCart.tableQty')}</th>
+              <th className="cartTablePrice">{t('clientCart.tablePrice')}</th>
+              <th className="cartTableTotal">{t('clientCart.tableTotal')}</th>
             </tr>
           </thead>
           <tbody>
@@ -39,7 +39,27 @@ function CartSummary({ items, t, formatPrice }) {
                 <tr key={`${item.restaurantId}-${item.itemId}`}>
                   <td>{item.restaurantName}</td>
                   <td>{item.name}</td>
-                  <td>{item.quantity ?? 1}</td>
+                  <td>
+                    <div className="cartQtyControl">
+                      <button
+                        className="cartQtyButton"
+                        type="button"
+                        aria-label={t('clientCart.decreaseQty')}
+                        onClick={() => onDecrease?.(item)}
+                      >
+                        -
+                      </button>
+                      <span className="cartQtyValue">{item.quantity ?? 1}</span>
+                      <button
+                        className="cartQtyButton"
+                        type="button"
+                        aria-label={t('clientCart.increaseQty')}
+                        onClick={() => onIncrease?.(item)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </td>
                   <td>{formatPrice(item.price)}</td>
                   <td>{formatPrice((item.price ?? 0) * (item.quantity ?? 1))}</td>
                 </tr>

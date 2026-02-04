@@ -28,10 +28,27 @@ const findActiveUserByEmail = async (db, email) =>
     active: { $ne: false },
   })
 
+const findRestaurants = async (db) =>
+  db
+    .collection(COLLECTION_NAME)
+    .find({ roles: { $in: ['restaurant'] }, active: { $ne: false } })
+    .project({ restaurantData: 1 })
+    .toArray()
+
+const findRestaurantById = async (db, id) =>
+  db
+    .collection(COLLECTION_NAME)
+    .findOne(
+      { _id: new ObjectId(id), roles: { $in: ['restaurant'] }, active: { $ne: false } },
+      { projection: { restaurantData: 1 } }
+    )
+
 export {
   COLLECTION_NAME,
   deleteUserById,
   findActiveUserByEmail,
+  findRestaurantById,
+  findRestaurants,
   findUserById,
   insertUser,
   isValidUserId,

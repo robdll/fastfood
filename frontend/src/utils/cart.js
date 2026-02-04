@@ -19,6 +19,12 @@ const writeCart = (items) => {
 
 const getCartItems = () => readCart()
 
+const setCartItems = (items) => {
+  const safeItems = Array.isArray(items) ? items : []
+  writeCart(safeItems)
+  return safeItems
+}
+
 const addCartItem = (item) => {
   const items = readCart()
   const existingIndex = items.findIndex(
@@ -47,6 +53,38 @@ const addCartItem = (item) => {
   return next
 }
 
+const updateCartItemQuantity = (restaurantId, itemId, quantity) => {
+  const items = readCart()
+  const updated = items.map((entry) => {
+    if (entry.restaurantId !== restaurantId || entry.itemId !== itemId) {
+      return entry
+    }
+    return {
+      ...entry,
+      quantity: Math.max(0, quantity ?? 0),
+    }
+  })
+  writeCart(updated)
+  return updated
+}
+
+const removeCartItem = (restaurantId, itemId) => {
+  const items = readCart()
+  const updated = items.filter(
+    (entry) =>
+      entry.restaurantId !== restaurantId || entry.itemId !== itemId
+  )
+  writeCart(updated)
+  return updated
+}
+
 const clearCart = () => writeCart([])
 
-export { addCartItem, clearCart, getCartItems }
+export {
+  addCartItem,
+  clearCart,
+  getCartItems,
+  removeCartItem,
+  setCartItems,
+  updateCartItemQuantity,
+}

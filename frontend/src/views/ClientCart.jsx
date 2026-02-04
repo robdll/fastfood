@@ -2,8 +2,13 @@ import { useState } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import CartCheckout from '../components/CartCheckout/CartCheckout'
 import CartSummary from '../components/CartSummary/CartSummary'
+import Modal from '../components/Modal/Modal'
 import Navbar from '../components/Navbar/Navbar'
-import { getCartItems } from '../utils/cart'
+import {
+  getCartItems,
+  removeCartItem,
+  updateCartItemQuantity,
+} from '../utils/cart'
 import '../components/MenuTable/MenuTable.css'
 
 function ClientCart({
@@ -15,7 +20,7 @@ function ClientCart({
   onLangChange,
   t,
 }) {
-  const [items] = useState(() => getCartItems())
+  const [items, setItems] = useState(() => getCartItems())
   const [paymentMethod, setPaymentMethod] = useState(() => {
     const preferred = user?.clientData?.paymentMethod
     return ['delivery', 'cards', 'coupons'].includes(preferred)
@@ -23,6 +28,45 @@ function ClientCart({
       : 'delivery'
   })
   const [deliveryOption, setDeliveryOption] = useState('delivery')
+  const [pendingRemoval, setPendingRemoval] = useState(null)
+
+  const handleIncrease = (item) => {
+    const nextQuantity = (item.quantity ?? 1) + 1
+    const updated = updateCartItemQuantity(
+      item.restaurantId,
+      item.itemId,
+      nextQuantity
+    )
+    setItems(updated)
+  }
+
+  const handleDecrease = (item) => {
+    const currentQty = item.quantity ?? 1
+    if (currentQty <= 1) {
+      setPendingRemoval(item)
+      return
+    }
+    const updated = updateCartItemQuantity(
+      item.restaurantId,
+      item.itemId,
+      currentQty - 1
+    )
+    setItems(updated)
+  }
+
+  const handleRemoveConfirm = () => {
+    if (!pendingRemoval) return
+    const updated = removeCartItem(
+      pendingRemoval.restaurantId,
+      pendingRemoval.itemId
+    )
+    setItems(updated)
+    setPendingRemoval(null)
+  }
+
+  const handleRemoveCancel = () => {
+    setPendingRemoval(null)
+  }
 
   const formatPrice = (value) => {
     if (value === null || value === undefined || value === '') return '—'
@@ -60,7 +104,13 @@ function ClientCart({
       />
       <main>
         <div className="page">
-          <CartSummary items={items} t={t} formatPrice={formatPrice} />
+          <CartSummary
+            items={items}
+            t={t}
+            formatPrice={formatPrice}
+            onIncrease={handleIncrease}
+            onDecrease={handleDecrease}
+          />
           <CartCheckout
             paymentMethod={paymentMethod}
             onPaymentMethodChange={setPaymentMethod}
@@ -71,6 +121,16 @@ function ClientCart({
           />
         </div>
       </main>
+      <Modal
+        isOpen={Boolean(pendingRemoval)}
+        title={t('clientCart.removeTitle')}
+        description={t('clientCart.removeDescription')}
+        submitLabel={t('clientCart.removeConfirm')}
+        cancelLabel={t('clientCart.removeCancel')}
+        submitVariant="danger"
+        onSubmit={handleRemoveConfirm}
+        onCancel={handleRemoveCancel}
+      />
     </div>
   )
 }

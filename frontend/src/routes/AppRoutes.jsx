@@ -134,6 +134,7 @@ function AppRoutes({
           <RequireAuth isAuthed={isAuthed}>
             <ClientRestaurants
               user={user}
+              token={token}
               lang={lang}
               onLangChange={onLangChange}
               onLogout={() => {

@@ -13,11 +13,6 @@ const getMenuByRestaurantId = async (req, res) => {
     return
   }
 
-  if (req.auth?.userId && req.auth.userId !== restaurantId) {
-    res.status(403).json({ error: 'Forbidden.' })
-    return
-  }
-
   const { client, db } = await connectToDatabase()
 
   try {

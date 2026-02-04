@@ -7,6 +7,10 @@ import { loginUser } from '../controllers/authController.js'
 import { requireAuth, requireSelf } from '../middleware/auth.js'
 import { createMeal, getMeals } from '../controllers/mealsController.js'
 import {
+  getRestaurantById,
+  getRestaurants,
+} from '../controllers/restaurantsController.js'
+import {
   addMenuItems,
   deleteMenuItem,
   getMenuByRestaurantId,
@@ -27,6 +31,8 @@ router.get('/', getRoot)
 router.post('/api/auth/login', loginUser)
 router.get('/api/meals', requireAuth, getMeals)
 router.post('/api/meals', requireAuth, upload.any(), createMeal)
+router.get('/api/restaurants', requireAuth, getRestaurants)
+router.get('/api/restaurants/:id', requireAuth, getRestaurantById)
 router.get('/api/users/:id', requireAuth, requireSelf, getUserById)
 router.get('/api/menus/:restaurantId', requireAuth, getMenuByRestaurantId)
 router.patch(
