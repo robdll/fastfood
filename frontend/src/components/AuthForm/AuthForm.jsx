@@ -286,6 +286,11 @@ function AuthForm({ onSubmit, t }) {
         )}
 
         <div className="authFooter">
+          {(mode === 'signup' ? signupError : loginError) && (
+            <span className="tiny errorText" role="status">
+              {mode === 'signup' ? signupError : loginError}
+            </span>
+          )}
           <button
             className="btn btn--primary"
             type="submit"
@@ -299,14 +304,6 @@ function AuthForm({ onSubmit, t }) {
               ? t('auth.submitCreate')
               : t('auth.submitSignIn')}
           </button>
-          {(mode === 'signup' ? signupError : loginError) && (
-            <span className="tiny errorText" role="status">
-              {mode === 'signup' ? signupError : loginError}
-            </span>
-          )}
-          <span className="tiny muted">
-            {mode === 'signup' ? t('auth.signupNote') : t('auth.signinNote')}
-          </span>
         </div>
       </form>
     </section>

@@ -51,6 +51,11 @@
   background: var(--primary-gold);
 }
 
+.btn--danger {
+  background: var(--primary-red);
+  color: var(--paper);
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

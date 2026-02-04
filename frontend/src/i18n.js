@@ -90,8 +90,6 @@ export const translations = {
       signupToast: 'Signup succeeded. You can log in now.',
       signupError: 'Unable to create the account right now.',
       signinError: 'Unable to sign in right now.',
-      signupNote: 'We will create a demo profile to continue.',
-      signinNote: 'Demo access for now.',
     },
     dashboard: {
       title: 'Dashboard',
@@ -113,6 +111,14 @@ export const translations = {
       submit: 'Save changes',
       updateSuccess: 'Profile updated.',
       updateError: 'Unable to update the profile right now.',
+      deleteProfile: 'Delete profile',
+      deleteProfileTitle: 'Delete your profile?',
+      deleteProfileDescription:
+        'This will deactivate your account and log you out. You can no longer sign in.',
+      deleteProfileConfirm: 'Delete profile',
+      deleteProfileCancel: 'Cancel',
+      deleteSuccess: 'Profile deactivated.',
+      deleteError: 'Unable to delete the profile right now.',
     },
   },
   it: {
@@ -202,8 +208,6 @@ export const translations = {
       signupToast: 'Registrazione completata. Ora puoi accedere.',
       signupError: "Impossibile creare l'account al momento.",
       signinError: "Impossibile accedere al momento.",
-      signupNote: 'Creiamo un profilo demo per continuare.',
-      signinNote: 'Accesso demo per ora.',
     },
     dashboard: {
       title: 'Dashboard',
@@ -225,6 +229,14 @@ export const translations = {
       submit: 'Salva modifiche',
       updateSuccess: 'Profilo aggiornato.',
       updateError: 'Impossibile aggiornare il profilo al momento.',
+      deleteProfile: 'Elimina profilo',
+      deleteProfileTitle: 'Eliminare il profilo?',
+      deleteProfileDescription:
+        "Questa azione disattiva l'account e ti disconnette. Non potrai accedere.",
+      deleteProfileConfirm: 'Elimina profilo',
+      deleteProfileCancel: 'Annulla',
+      deleteSuccess: 'Profilo disattivato.',
+      deleteError: 'Impossibile eliminare il profilo al momento.',
     },
   },
 }

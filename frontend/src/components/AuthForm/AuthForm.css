@@ -66,6 +66,33 @@
   font-weight: 700;
 }
 
+.settingsDeleteButton {
+  margin-top: 8px;
+  align-self: flex-start;
+}
+
+@media (min-width: 768px) {
+  .settingsRoles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+  }
+
+  .settingsRoles legend {
+    grid-column: 1 / -1;
+  }
+
+  .settingsRoles .checkboxRow {
+    margin: 0;
+  }
+
+  .settingsRoles .settingsDeleteButton {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-self: stretch;
+  }
+}
+
 .preferenceList {
   display: grid;
   gap: 6px;
@@ -141,7 +168,11 @@
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+}
+
+.authFooter .errorText {
+  width: 100%;
 }
 
 .tiny {
@@ -159,8 +190,13 @@
     max-width: 1120px;
   }
 
+  .settingsRoles {
+    height: 100%;
+  }
+
   .settingsGrid {
     grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
     align-items: start;
   }
 }
+

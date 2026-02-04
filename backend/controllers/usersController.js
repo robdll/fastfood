@@ -79,6 +79,7 @@ const createUser = async (req, res) => {
     const user = {
       ...payload,
       clientData: normalizedClientData,
+      active: payload.active ?? true,
       createdAt: new Date(),
       updatedAt: new Date(),
     }

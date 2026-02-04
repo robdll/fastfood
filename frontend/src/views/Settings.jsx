@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
+import Modal from '../components/Modal/Modal'
 import useToast from '../hooks/useToast'
 import { updateUser } from '../services/users'
 import { getJwt } from '../utils/auth'
@@ -38,6 +39,8 @@ function Settings({
     restaurant: false,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const userRoles = user?.roles ?? []
   const canSwitch = userRoles.includes('client') && userRoles.includes('restaurant')
@@ -155,6 +158,34 @@ function Settings({
     }
   }
 
+  const handleDeleteConfirm = async () => {
+    if (!user?._id || isDeleting) return
+    const token = getJwt()
+    if (!token) {
+      setSubmitError(t('settings.deleteError'))
+      return
+    }
+
+    setIsDeleting(true)
+    setSubmitError('')
+
+    try {
+      await updateUser(
+        user._id,
+        token,
+        { active: false },
+        t('settings.deleteError')
+      )
+      showToast({ type: 'success', message: t('settings.deleteSuccess') })
+      setIsDeleteOpen(false)
+      onLogout()
+    } catch (error) {
+      setSubmitError(error.message || t('settings.deleteError'))
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return (
     <div className="landing settings">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -225,7 +256,7 @@ function Settings({
                     </label>
                   </div>
 
-                  <fieldset className="formField formField--checkboxes">
+                  <fieldset className="formField formField--checkboxes settingsRoles">
                     <legend>{t('settings.roleLegend')}</legend>
                     <label className="checkboxRow">
                       <input
@@ -245,7 +276,14 @@ function Settings({
                       />
                       <span>{t('auth.roleRestaurant')}</span>
                     </label>
-                    <p className="tiny muted">{t('settings.roleHint')}</p>
+                    <button
+                      className="btn btn--danger settingsDeleteButton"
+                      type="button"
+                      disabled={isDeleting}
+                      onClick={() => setIsDeleteOpen(true)}
+                    >
+                      {t('settings.deleteProfile')}
+                    </button>
                   </fieldset>
                 </div>
 
@@ -376,6 +414,16 @@ function Settings({
           </section>
         </div>
       </main>
+      <Modal
+        isOpen={isDeleteOpen}
+        title={t('settings.deleteProfileTitle')}
+        description={t('settings.deleteProfileDescription')}
+        submitLabel={t('settings.deleteProfileConfirm')}
+        cancelLabel={t('settings.deleteProfileCancel')}
+        submitVariant="danger"
+        onSubmit={handleDeleteConfirm}
+        onCancel={() => (isDeleting ? null : setIsDeleteOpen(false))}
+      />
     </div>
   )
 }

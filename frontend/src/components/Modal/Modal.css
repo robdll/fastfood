@@ -1,0 +1,43 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 25, 25, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 120;
+}
+
+.modalCard {
+  width: min(520px, 100%);
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 20px;
+}
+
+.modalContent {
+  display: grid;
+  gap: 8px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.modalDescription {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+.modalActions {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}

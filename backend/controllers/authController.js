@@ -34,6 +34,7 @@ const loginUser = async (req, res) => {
   try {
     const user = await db.collection(COLLECTION_NAME).findOne({
       email: { $regex: `^${escapeRegex(email)}$`, $options: 'i' },
+      active: { $ne: false },
     })
 
     if (!user || user.password !== password) {
