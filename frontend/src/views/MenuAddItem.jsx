@@ -36,6 +36,7 @@ function MenuAddItem({
   const [removedIngredients, setRemovedIngredients] = useState([])
   const [editPhoto, setEditPhoto] = useState(null)
   const [editPhotoPreview, setEditPhotoPreview] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     if (!token || !restaurantId) {
@@ -224,6 +225,29 @@ function MenuAddItem({
       .filter((meal) => meal.id && !existingMealIds.has(meal.id))
   }, [existingMealIds, meals])
 
+  const pageSize = 20
+  const totalMeals = tableMeals.length
+  const totalPages = Math.max(1, Math.ceil(totalMeals / pageSize))
+  const pageStart = (currentPage - 1) * pageSize
+  const pageEnd = Math.min(pageStart + pageSize, totalMeals)
+  const pagedMeals = useMemo(
+    () => tableMeals.slice(pageStart, pageEnd),
+    [pageEnd, pageStart, tableMeals]
+  )
+
+  useEffect(() => {
+    setCurrentPage((prev) => {
+      const next = Math.min(prev, totalPages)
+      if (next !== prev) setSelectedMealId(null)
+      return next
+    })
+  }, [totalPages])
+
+  const handlePageChange = (nextPage) => {
+    setCurrentPage(nextPage)
+    setSelectedMealId(null)
+  }
+
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -278,16 +302,22 @@ function MenuAddItem({
             )}
             {!isMealsLoading && tableMeals.length > 0 && (
               <div className="menuTableWrapper">
-                <table className="menuTable">
+                <table className="menuTable menuTable--catalog">
                   <thead>
                     <tr>
-                      <th>{t('dashboard.menuTableImage')}</th>
+                      <th className="menuTable__colImage">
+                        {t('dashboard.menuTableImage')}
+                      </th>
                       <th>{t('dashboard.menuTableName')}</th>
-                      <th>{t('dashboard.menuTableType')}</th>
-                      <th>{t('dashboard.menuAddStatus')}</th>
+                      <th className="menuTable__colCategory">
+                        {t('dashboard.menuTableType')}
+                      </th>
+                      <th className="menuTable__colStatus">
+                        {t('dashboard.menuAddStatus')}
+                      </th>
                     </tr>
                   </thead>
-                  {tableMeals.map((meal) => {
+                  {pagedMeals.map((meal) => {
                     const isAlreadyAdded = existingMealIds.has(meal.id)
                     const isSelected = meal.id === selectedMealId
                     return (
@@ -297,7 +327,7 @@ function MenuAddItem({
                             isAlreadyAdded ? 'menuRow--disabled' : ''
                           } ${isSelected ? 'menuRow--selected' : ''}`}
                         >
-                          <td>
+                          <td className="menuTable__colImage">
                             <div className="menuThumb">
                               {meal.imageUrl ? (
                                 <img src={meal.imageUrl} alt={meal.name} />
@@ -307,8 +337,10 @@ function MenuAddItem({
                             </div>
                           </td>
                           <td>{meal.name}</td>
-                          <td>{meal.category}</td>
-                          <td>
+                          <td className="menuTable__colCategory">
+                            {meal.category}
+                          </td>
+                          <td className="menuTable__colStatus">
                             <button
                               className="btn btn--secondary menuRow__action"
                               type="button"
@@ -391,6 +423,30 @@ function MenuAddItem({
                     )
                   })}
                 </table>
+                {totalMeals > pageSize && (
+                  <div className="menuPagination">
+                    <button
+                      className="btn btn--secondary"
+                      type="button"
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                    >
+                      {t('dashboard.menuTablePrev')}
+                    </button>
+                    <p className="menuPagination__meta">
+                      {t('dashboard.menuTablePage')} {currentPage}{' '}
+                      {t('dashboard.menuTableOf')} {totalPages}
+                    </p>
+                    <button
+                      className="btn btn--secondary"
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                    >
+                      {t('dashboard.menuTableNext')}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </section>

@@ -159,6 +159,38 @@
   background: rgba(239, 200, 86, 0.08);
 }
 
+.menuTable__colImage {
+  width: 80px;
+}
+
+.menuTable__colCategory {
+  width: 140px;
+}
+
+.menuTable__colStatus {
+  width: 120px;
+}
+
+.menuTable--catalog .menuRow {
+  cursor: default;
+}
+
+.menuPagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 0 12px 12px;
+  flex-wrap: wrap;
+}
+
+.menuPagination__meta {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
 .menuAccordion {
   display: grid;
   gap: 12px;
