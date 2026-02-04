@@ -20,6 +20,7 @@ function CartCheckout({
   formatPrice,
   lang,
   t,
+  onCheckout,
 }) {
   const renderCurrency = (value) =>
     value === null || value === undefined ? '—' : formatPrice(value)
@@ -120,7 +121,12 @@ function CartCheckout({
           <strong>{renderEta()}</strong>
         </div>
       </div>
-      <button className="btn btn--primary" type="button" disabled={isDisabled}>
+      <button
+        className="btn btn--primary"
+        type="button"
+        disabled={isDisabled}
+        onClick={onCheckout}
+      >
         {t('clientCart.checkoutAction')}
       </button>
     </section>

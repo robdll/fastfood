@@ -4,12 +4,15 @@ import CartCheckout from '../components/CartCheckout/CartCheckout'
 import CartSummary from '../components/CartSummary/CartSummary'
 import Modal from '../components/Modal/Modal'
 import Navbar from '../components/Navbar/Navbar'
+import useToast from '../hooks/useToast'
 import { getRestaurantById } from '../services/restaurants'
 import {
+  clearCart,
   getCartItems,
   removeCartItem,
   updateCartItemQuantity,
 } from '../utils/cart'
+import { addOrders, getOrders } from '../utils/orders'
 import '../components/MenuTable/MenuTable.css'
 
 const buildSearchUrl = (query, lang) => {
@@ -61,6 +64,7 @@ function ClientCart({
   onLangChange,
   t,
 }) {
+  const { showToast } = useToast()
   const [items, setItems] = useState(() => getCartItems())
   const [paymentMethod, setPaymentMethod] = useState(() => {
     const preferred = user?.clientData?.paymentMethod
@@ -77,6 +81,7 @@ function ClientCart({
     expectedMinutes: null,
     isLoading: false,
     error: null,
+    byRestaurant: {},
   })
 
   const handleIncrease = (item) => {
@@ -141,6 +146,31 @@ function ClientCart({
       ),
     [items]
   )
+
+  const groupedItems = useMemo(() => {
+    const groups = new Map()
+    items.forEach((item) => {
+      if (!item.restaurantId) return
+      const existing = groups.get(item.restaurantId)
+      if (existing) {
+        existing.items.push(item)
+        if (!existing.restaurantName && item.restaurantName) {
+          existing.restaurantName = item.restaurantName
+        }
+        if (!existing.restaurantAddress && item.restaurantAddress) {
+          existing.restaurantAddress = item.restaurantAddress
+        }
+      } else {
+        groups.set(item.restaurantId, {
+          restaurantId: item.restaurantId,
+          restaurantName: item.restaurantName ?? '',
+          restaurantAddress: item.restaurantAddress ?? '',
+          items: [item],
+        })
+      }
+    })
+    return Array.from(groups.values())
+  }, [items])
 
   const restaurantIds = useMemo(
     () => [...new Set(items.map((item) => item.restaurantId).filter(Boolean))],
@@ -208,6 +238,7 @@ function ClientCart({
         expectedMinutes: null,
         isLoading: false,
         error: null,
+        byRestaurant: {},
       })
       return () => {
         cancelled = true
@@ -221,6 +252,7 @@ function ClientCart({
         expectedMinutes: null,
         isLoading: false,
         error: 'missing-address',
+        byRestaurant: {},
       })
       return () => {
         cancelled = true
@@ -235,14 +267,23 @@ function ClientCart({
       }))
       try {
         const deliveryCoords = await geocodeAddress(deliveryAddress.trim(), lang)
+        const existingOrders = getOrders()
+        const preparationCounts = existingOrders.reduce((acc, order) => {
+          if (order?.status === 'preparation' && order?.restaurantId) {
+            acc[order.restaurantId] = (acc[order.restaurantId] ?? 0) + 1
+          }
+          return acc
+        }, {})
         const estimates = await Promise.all(
           restaurantIds.map(async (id) => {
             const coords = await geocodeAddress(restaurantAddresses[id], lang)
             const distanceKm = haversineKm(coords, deliveryCoords)
             const roundedKm = Math.ceil(distanceKm)
             const fee = Math.max(1, roundedKm * 0.5)
-            const minutes = 30 + roundedKm * 3
-            return { fee, minutes }
+            const baseMinutes = 30 + roundedKm * 1.5
+            const extraMinutes = (preparationCounts[id] ?? 0) * 5
+            const minutes = baseMinutes + extraMinutes
+            return { restaurantId: id, fee, minutes }
           })
         )
         if (cancelled) return
@@ -251,11 +292,16 @@ function ClientCart({
           (acc, entry) => Math.max(acc, entry.minutes),
           0
         )
+        const byRestaurant = estimates.reduce((acc, entry) => {
+          acc[entry.restaurantId] = { fee: entry.fee, minutes: entry.minutes }
+          return acc
+        }, {})
         setDeliveryEstimate({
           fee: deliveryFee,
           expectedMinutes,
           isLoading: false,
           error: null,
+          byRestaurant,
         })
       } catch (error) {
         if (cancelled) return
@@ -265,6 +311,7 @@ function ClientCart({
           expectedMinutes: null,
           isLoading: false,
           error: 'geocode',
+          byRestaurant: {},
         })
       }
     }
@@ -284,6 +331,64 @@ function ClientCart({
   const isCheckoutDisabled =
     items.length === 0 ||
     (deliveryOption === 'delivery' && !deliveryAddress.trim())
+
+  const createOrderId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID()
+    }
+    return `order-${Date.now()}-${Math.floor(Math.random() * 10000)}`
+  }
+
+  const handleCheckout = () => {
+    if (isCheckoutDisabled || items.length === 0) return
+    const createdAt = new Date().toISOString()
+    const trimmedAddress = deliveryAddress.trim()
+    const orders = groupedItems.map((group) => {
+      const orderSubtotal = group.items.reduce(
+        (acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1),
+        0
+      )
+      const estimate =
+        deliveryOption === 'delivery'
+          ? deliveryEstimate.byRestaurant?.[group.restaurantId]
+          : null
+      const deliveryFeeForOrder =
+        deliveryOption === 'delivery' ? estimate?.fee ?? null : 0
+      const expectedMinutesForOrder =
+        deliveryOption === 'delivery' ? estimate?.minutes ?? null : null
+      const orderTotal =
+        deliveryOption === 'delivery'
+          ? deliveryFeeForOrder === null
+            ? null
+            : orderSubtotal + deliveryFeeForOrder
+          : orderSubtotal
+      return {
+        id: createOrderId(),
+        createdAt,
+        status: 'preparation',
+        restaurantId: group.restaurantId,
+        restaurantName: group.restaurantName,
+        restaurantAddress: group.restaurantAddress,
+        items: group.items.map((item) => ({
+          itemId: item.itemId,
+          name: item.name,
+          price: item.price ?? 0,
+          quantity: item.quantity ?? 1,
+        })),
+        subtotal: orderSubtotal,
+        deliveryFee: deliveryFeeForOrder,
+        total: orderTotal,
+        expectedMinutes: expectedMinutesForOrder,
+        deliveryOption,
+        deliveryAddress: deliveryOption === 'delivery' ? trimmedAddress : '',
+        paymentMethod,
+      }
+    })
+    addOrders(orders)
+    clearCart()
+    setItems([])
+    showToast({ type: 'success', message: t('clientCart.checkoutSuccess') })
+  }
 
   return (
     <div className="landing dashboard">
@@ -329,6 +434,7 @@ function ClientCart({
             formatPrice={formatPrice}
             lang={lang}
             t={t}
+            onCheckout={handleCheckout}
           />
         </div>
       </main>
