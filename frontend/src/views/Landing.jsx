@@ -9,15 +9,7 @@ function Landing({ health, error, onEnterApp, lang, onLangChange, t }) {
 
   return (
     <div className="landing">
-      <Navbar t={t} lang={lang} onLangChange={onLangChange}>
-        <button
-          className="navLink navLink--button"
-          type="button"
-          onClick={onEnterApp}
-        >
-          {t('common.goToApp')}
-        </button>
-      </Navbar>
+      <Navbar t={t} lang={lang} onLangChange={onLangChange} />
 
       <main>
         <HeroSection t={t} onEnterApp={onEnterApp} />
