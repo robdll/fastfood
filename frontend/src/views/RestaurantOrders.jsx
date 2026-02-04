@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import './RestaurantOrders.css'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import Navbar from '../components/Navbar/Navbar'
-import RestaurantOrderCard from '../components/RestaurantOrderCard/RestaurantOrderCard'
+import OrderCard from '../components/Orders/OrderCard'
+import OrdersList from '../components/Orders/OrdersList'
 import useToast from '../hooks/useToast'
 import { getOrders, updateOrderStatus } from '../utils/orders'
 
@@ -77,14 +77,25 @@ function RestaurantOrders({
     })
   }, [orders, restaurantId])
 
-  const handleMarkReady = (orderId) => {
-    if (!orderId) return
-    const updated = updateOrderStatus(orderId, 'readyForPickup')
+  const handleUpdateStatus = (orderId, nextStatus) => {
+    if (!orderId || !nextStatus) return
+    const updated = updateOrderStatus(orderId, nextStatus)
     setOrders(updated)
+    const messageKey =
+      nextStatus === 'delivered'
+        ? 'restaurantOrders.statusUpdatedDelivered'
+        : 'restaurantOrders.statusUpdatedReadyForPickup'
     showToast({
       type: 'success',
-      message: t('restaurantOrders.statusUpdated'),
+      message: t(messageKey),
     })
+  }
+
+  const tableLabels = {
+    item: t('restaurantOrders.tableItem'),
+    qty: t('restaurantOrders.tableQty'),
+    unit: t('restaurantOrders.tableUnit'),
+    total: t('restaurantOrders.tableTotal'),
   }
 
   return (
@@ -113,26 +124,89 @@ function RestaurantOrders({
             {sortedOrders.length === 0 ? (
               <p className="muted">{t('restaurantOrders.empty')}</p>
             ) : (
-              <div className="ordersList">
+              <OrdersList>
                 {sortedOrders.map((order, index) => {
                   const orderId = resolveOrderId(order)
                   const orderKey = orderId ?? index
+                  const isPreparation = order?.status === 'preparation'
+                  const deliveryOption = order?.deliveryOption ?? 'pickup'
+                  const nextStatus =
+                    deliveryOption === 'delivery' ? 'readyForPickup' : 'delivered'
+                  const actionLabel =
+                    deliveryOption === 'delivery'
+                      ? t('restaurantOrders.markReady')
+                      : t('restaurantOrders.markDelivered')
+                  const action = isPreparation ? (
+                    <button
+                      className="btn btn--secondary orderCard__actionBtn"
+                      type="button"
+                      onClick={() => handleUpdateStatus(orderId, nextStatus)}
+                    >
+                      {actionLabel}
+                    </button>
+                  ) : null
+                  const metaItems = [
+                    {
+                      label: t('restaurantOrders.orderType'),
+                      value:
+                        deliveryOption === 'delivery'
+                          ? t('restaurantOrders.typeDelivery')
+                          : t('restaurantOrders.typePickup'),
+                    },
+                    {
+                      label: t('restaurantOrders.deliveryAddress'),
+                      value:
+                        deliveryOption === 'delivery' && order?.deliveryAddress
+                          ? order.deliveryAddress
+                          : '—',
+                    },
+                    {
+                      label: t('restaurantOrders.payment'),
+                      value: paymentLabel(order?.paymentMethod),
+                    },
+                    {
+                      label: t('restaurantOrders.eta'),
+                      value:
+                        deliveryOption === 'delivery' && order?.expectedMinutes
+                          ? t('restaurantOrders.etaMinutes', {
+                              minutes: order.expectedMinutes,
+                            })
+                          : '—',
+                    },
+                    {
+                      label: t('restaurantOrders.subtotal'),
+                      value: formatPrice(order.subtotal),
+                    },
+                    {
+                      label: t('restaurantOrders.deliveryFee'),
+                      value: formatPrice(order.deliveryFee),
+                    },
+                    {
+                      label: t('restaurantOrders.total'),
+                      value: formatPrice(order.total),
+                    },
+                  ]
                   return (
-                    <RestaurantOrderCard
+                    <OrderCard
                       key={orderKey}
-                      order={order}
-                      orderId={orderId}
+                      title={t('restaurantOrders.orderLabel', {
+                        id: orderId ?? '—',
+                      })}
+                      subtitle={t('restaurantOrders.placedOn', {
+                        date: formatDate(order.createdAt),
+                      })}
+                      statusText={statusLabel(order.status)}
+                      action={action}
+                      metaItems={metaItems}
+                      itemsTitle={t('restaurantOrders.itemsTitle')}
+                      items={order.items ?? []}
                       orderKey={orderKey}
-                      formatDate={formatDate}
                       formatPrice={formatPrice}
-                      statusLabel={statusLabel}
-                      paymentLabel={paymentLabel}
-                      onMarkReady={handleMarkReady}
-                      t={t}
+                      tableLabels={tableLabels}
                     />
                   )
                 })}
-              </div>
+              </OrdersList>
             )}
           </section>
         </div>

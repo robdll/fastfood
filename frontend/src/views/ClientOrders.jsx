@@ -1,7 +1,10 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import Navbar from '../components/Navbar/Navbar'
-import { getOrders } from '../utils/orders'
+import OrderCard from '../components/Orders/OrderCard'
+import OrdersList from '../components/Orders/OrdersList'
+import useToast from '../hooks/useToast'
+import { getOrders, updateOrderStatus } from '../utils/orders'
 
 function ClientOrders({
   onLogout,
@@ -11,7 +14,8 @@ function ClientOrders({
   onLangChange,
   t,
 }) {
-  const orders = useMemo(() => getOrders(), [])
+  const { showToast } = useToast()
+  const [orders, setOrders] = useState(() => getOrders())
 
   const formatPrice = (value) => {
     if (value === null || value === undefined || value === '') return '—'
@@ -36,6 +40,15 @@ function ClientOrders({
     return parsed.toLocaleString(lang)
   }
 
+  const resolveOrderId = (order) => {
+    const raw = order?._id ?? order?.id
+    if (raw === null || raw === undefined) return null
+    if (typeof raw === 'string' || typeof raw === 'number') return `${raw}`
+    if (typeof raw === 'object' && raw.$oid) return raw.$oid
+    if (typeof raw?.toString === 'function') return raw.toString()
+    return null
+  }
+
   const statusLabel = (status) => {
     if (!status) return '—'
     return t(`clientOrders.status${status[0].toUpperCase()}${status.slice(1)}`)
@@ -49,6 +62,23 @@ function ClientOrders({
       return bTime - aTime
     })
   }, [orders])
+
+  const handleMarkDelivered = (orderId) => {
+    if (!orderId) return
+    const updated = updateOrderStatus(orderId, 'delivered')
+    setOrders(updated)
+    showToast({
+      type: 'success',
+      message: t('clientOrders.statusUpdatedDelivered'),
+    })
+  }
+  const tableLabels = {
+    item: t('clientOrders.tableItem'),
+    qty: t('clientOrders.tableQty'),
+    unit: t('clientOrders.tableUnit'),
+    total: t('clientOrders.tableTotal'),
+  }
+
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -75,68 +105,68 @@ function ClientOrders({
             {sortedOrders.length === 0 ? (
               <p className="muted">{t('clientOrders.empty')}</p>
             ) : (
-              <div className="ordersList">
-                {sortedOrders.map((order) => (
-                  <article key={order.id} className="card orderCard">
-                    <div className="orderCard__header">
-                      <div>
-                        <h3>{order.restaurantName ?? t('clientOrders.unknownRestaurant')}</h3>
-                        <p className="muted">
-                          {t('clientOrders.placedOn', {
-                            date: formatDate(order.createdAt),
-                          })}
-                        </p>
-                      </div>
-                      <span className="orderCard__status">
-                        {statusLabel(order.status)}
-                      </span>
-                    </div>
-                    <div className="orderCard__meta">
-                      <div>
-                        <span className="muted">{t('clientOrders.orderType')}</span>
-                        <strong>
-                          {order.deliveryOption === 'delivery'
-                            ? t('clientOrders.typeDelivery')
-                            : t('clientOrders.typePickup')}
-                        </strong>
-                      </div>
-                      <div>
-                        <span className="muted">{t('clientOrders.deliveryFee')}</span>
-                        <strong>{formatPrice(order.deliveryFee)}</strong>
-                      </div>
-                      <div>
-                        <span className="muted">{t('clientOrders.eta')}</span>
-                        <strong>
-                          {order.deliveryOption === 'delivery' && order.expectedMinutes
-                            ? t('clientOrders.etaMinutes', {
-                                minutes: order.expectedMinutes,
-                              })
-                            : '—'}
-                        </strong>
-                      </div>
-                      <div>
-                        <span className="muted">{t('clientOrders.total')}</span>
-                        <strong>{formatPrice(order.total)}</strong>
-                      </div>
-                    </div>
-                    <div className="orderCard__items">
-                      <h4>{t('clientOrders.itemsTitle')}</h4>
-                      <ul>
-                        {(order.items ?? []).map((item) => (
-                          <li key={`${order.id}-${item.itemId}`}>
-                            <span>
-                              {item.quantity ?? 1}× {item.name ?? '—'}
-                            </span>
-                            <strong>
-                              {formatPrice((item.price ?? 0) * (item.quantity ?? 1))}
-                            </strong>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </article>
-                ))}
-              </div>
+              <OrdersList>
+                {sortedOrders.map((order, index) => {
+                  const orderId = resolveOrderId(order)
+                  const orderKey = orderId ?? index
+                  const deliveryOption = order?.deliveryOption ?? 'pickup'
+                  const canMarkDelivered = order?.status === 'readyForPickup'
+                  const action = canMarkDelivered ? (
+                    <button
+                      className="btn btn--secondary orderCard__actionBtn"
+                      type="button"
+                      onClick={() => handleMarkDelivered(orderId)}
+                    >
+                      {t('clientOrders.markDelivered')}
+                    </button>
+                  ) : null
+                  const metaItems = [
+                    {
+                      label: t('clientOrders.orderType'),
+                      value:
+                        deliveryOption === 'delivery'
+                          ? t('clientOrders.typeDelivery')
+                          : t('clientOrders.typePickup'),
+                    },
+                    {
+                      label: t('clientOrders.deliveryFee'),
+                      value: formatPrice(order.deliveryFee),
+                    },
+                    {
+                      label: t('clientOrders.eta'),
+                      value:
+                        deliveryOption === 'delivery' && order.expectedMinutes
+                          ? t('clientOrders.etaMinutes', {
+                              minutes: order.expectedMinutes,
+                            })
+                          : '—',
+                    },
+                    {
+                      label: t('clientOrders.total'),
+                      value: formatPrice(order.total),
+                    },
+                  ]
+                  return (
+                    <OrderCard
+                      key={orderKey}
+                      title={
+                        order.restaurantName ?? t('clientOrders.unknownRestaurant')
+                      }
+                      subtitle={t('clientOrders.placedOn', {
+                        date: formatDate(order.createdAt),
+                      })}
+                      statusText={statusLabel(order.status)}
+                      action={action}
+                      metaItems={metaItems}
+                      itemsTitle={t('clientOrders.itemsTitle')}
+                      items={order.items ?? []}
+                      orderKey={orderKey}
+                      formatPrice={formatPrice}
+                      tableLabels={tableLabels}
+                    />
+                  )
+                })}
+              </OrdersList>
             )}
           </section>
         </div>
