@@ -10,6 +10,7 @@ function Modal({
   cancelLabel = 'Cancel',
   submitVariant = 'primary',
   cancelVariant = 'secondary',
+  children,
 }) {
   if (!isOpen) return null
 
@@ -19,6 +20,7 @@ function Modal({
         <div className="modalContent">
           {title && <h3 className="modalTitle">{title}</h3>}
           {description && <p className="modalDescription">{description}</p>}
+          {children && <div className="modalBody">{children}</div>}
         </div>
         <div className="modalActions">
           {onCancel && (

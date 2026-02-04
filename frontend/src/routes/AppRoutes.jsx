@@ -14,6 +14,7 @@ function AppRoutes({
   error,
   isAuthed,
   user,
+  token,
   fallbackRoles = [],
   lang,
   onLangChange,
@@ -90,6 +91,8 @@ function AppRoutes({
                 onLogout()
                 navigate('/', { replace: true })
               }}
+              user={user}
+              token={token}
               lang={lang}
               onLangChange={onLangChange}
               t={t}
@@ -109,6 +112,8 @@ function AppRoutes({
                 onLogout()
                 navigate('/', { replace: true })
               }}
+              user={user}
+              token={token}
               lang={lang}
               onLangChange={onLangChange}
               t={t}

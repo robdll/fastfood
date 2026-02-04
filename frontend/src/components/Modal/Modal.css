@@ -34,6 +34,12 @@
   font-family: var(--font-sans);
 }
 
+.modalBody {
+  margin-top: 8px;
+  display: grid;
+  gap: 10px;
+}
+
 .modalActions {
   margin-top: 16px;
   display: flex;

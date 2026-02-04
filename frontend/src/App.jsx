@@ -124,6 +124,7 @@ function App() {
       error={error}
       isAuthed={isAuthed}
       user={user}
+      token={jwt}
       fallbackRoles={jwtPayload?.roles ?? []}
       lang={lang}
       onLangChange={handleLangChange}
