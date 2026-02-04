@@ -175,6 +175,7 @@ function AppRoutes({
           <RequireAuth isAuthed={isAuthed}>
             <ClientCart
               user={user}
+              token={token}
               lang={lang}
               onLangChange={onLangChange}
               onLogout={() => {

@@ -38,3 +38,26 @@
   gap: 8px;
   font-weight: 700;
 }
+
+.cartRecap {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 2px solid var(--color-border, #111);
+  background: var(--color-card-muted, #f2f2f2);
+}
+
+.cartRecap h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.cartRecap__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cartRecap__row--total {
+  font-size: 1.05rem;
+}

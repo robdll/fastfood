@@ -114,6 +114,7 @@ function ClientRestaurantMenu({
     addCartItem({
       restaurantId: restaurant._id ?? restaurant.id,
       restaurantName: restaurant.name,
+      restaurantAddress: restaurant.address ?? '',
       itemId: item.id,
       name: item.name,
       price: item.price ?? 0,

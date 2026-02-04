@@ -11,9 +11,28 @@ function CartCheckout({
   deliveryAddress,
   onDeliveryAddressChange,
   isDisabled,
+  subtotal,
+  deliveryFee,
+  total,
+  expectedMinutes,
+  isEstimateLoading,
+  hasEstimateError,
+  formatPrice,
   lang,
   t,
 }) {
+  const renderCurrency = (value) =>
+    value === null || value === undefined ? '—' : formatPrice(value)
+
+  const renderEta = () => {
+    if (deliveryOption === 'pickup') {
+      return t('clientCart.recapEtaPickup')
+    }
+    if (isEstimateLoading) return t('common.loading')
+    if (hasEstimateError || !expectedMinutes) return '—'
+    return t('clientCart.recapEtaMinutes', { minutes: expectedMinutes })
+  }
+
   return (
     <section className="card cartForm">
       <h3>{t('clientCart.checkoutTitle')}</h3>
@@ -78,6 +97,29 @@ function CartCheckout({
           )}
         </div>
       )}
+      <div className="cartRecap">
+        <h4>{t('clientCart.recapTitle')}</h4>
+        <div className="cartRecap__row">
+          <span>{t('clientCart.recapSubtotal')}</span>
+          <strong>{renderCurrency(subtotal)}</strong>
+        </div>
+        {deliveryOption === 'delivery' && (
+          <div className="cartRecap__row">
+            <span>{t('clientCart.recapDeliveryFee')}</span>
+            <strong>{renderCurrency(deliveryFee)}</strong>
+          </div>
+        )}
+        <div className="cartRecap__row cartRecap__row--total">
+          <span>{t('clientCart.recapTotal')}</span>
+          <strong>
+            {deliveryOption === 'delivery' ? renderCurrency(total) : renderCurrency(subtotal)}
+          </strong>
+        </div>
+        <div className="cartRecap__row">
+          <span>{t('clientCart.recapEta')}</span>
+          <strong>{renderEta()}</strong>
+        </div>
+      </div>
       <button className="btn btn--primary" type="button" disabled={isDisabled}>
         {t('clientCart.checkoutAction')}
       </button>
