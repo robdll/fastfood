@@ -17,6 +17,16 @@
   gap: 16px;
 }
 
+.settingsGrid {
+  display: grid;
+  gap: 16px;
+}
+
+.settingsProfile {
+  display: grid;
+  gap: 12px;
+}
+
 .formGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -34,17 +44,12 @@
   margin-bottom: 6px;
 }
 
-.input,
-.textarea {
+.input {
   border: 3px solid var(--ink);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-family: var(--font-sans);
   font-size: 14px;
-}
-
-.textarea {
-  resize: vertical;
 }
 
 .formField--checkboxes {
@@ -147,4 +152,15 @@
 
 .errorText {
   color: var(--primary-red);
+}
+
+@media (min-width: 768px) {
+  .authCard {
+    max-width: 1120px;
+  }
+
+  .settingsGrid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+  }
 }
