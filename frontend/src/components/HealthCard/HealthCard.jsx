@@ -1,4 +1,5 @@
 import './HealthCard.css'
+import Spinner from '../Spinner/Spinner'
 
 function HealthCard({ health, error, t }) {
   return (
@@ -11,7 +12,9 @@ function HealthCard({ health, error, t }) {
       ) : health ? (
         <pre className="health__pre">{JSON.stringify(health, null, 2)}</pre>
       ) : (
-        <p className="muted">{t('health.loading')}</p>
+        <p className="muted">
+          <Spinner className="spinner--inline" label={t('health.loading')} />
+        </p>
       )}
     </section>
   )

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Spinner from '../Spinner/Spinner'
 import useLogin from '../../hooks/useLogin'
 import useSignup from '../../hooks/useSignup'
 import useToast from '../../hooks/useToast'
@@ -300,9 +301,16 @@ function AuthForm({ onSubmit, t }) {
               (mode === 'signup' && !hasAnyRole)
             }
           >
-            {mode === 'signup'
-              ? t('auth.submitCreate')
-              : t('auth.submitSignIn')}
+            {isSignupSubmitting || isLoginSubmitting ? (
+              <Spinner
+                className="spinner--button"
+                label={t('common.loading')}
+              />
+            ) : mode === 'signup' ? (
+              t('auth.submitCreate')
+            ) : (
+              t('auth.submitSignIn')
+            )}
           </button>
         </div>
       </form>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import MenuTable from '../components/MenuTable/MenuTable'
 import Navbar from '../components/Navbar/Navbar'
+import Spinner from '../components/Spinner/Spinner'
 import { getMenuByRestaurantId } from '../services/menus'
 
 function Dashboard({
@@ -162,7 +163,12 @@ function Dashboard({
                 </div>
               </div>
               {isMenuLoading && (
-                <p className="muted">{t('dashboard.menuLoading')}</p>
+                <p className="muted">
+                  <Spinner
+                    className="spinner--inline"
+                    label={t('dashboard.menuLoading')}
+                  />
+                </p>
               )}
               {menuError && <p className="menuError">{menuError}</p>}
               <MenuTable

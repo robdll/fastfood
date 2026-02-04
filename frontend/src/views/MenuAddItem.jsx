@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import MenuItemForm from '../components/MenuItemForm/MenuItemForm'
 import Navbar from '../components/Navbar/Navbar'
+import Spinner from '../components/Spinner/Spinner'
 import mealCategories from '../constants/mealCategories'
 import useToast from '../hooks/useToast'
 import { getMeals } from '../services/meals'
@@ -259,13 +260,15 @@ function MenuAddItem({
                 </button>
               </div>
             </div>
-            {isMenuLoading && (
-              <p className="muted">{t('dashboard.menuLoading')}</p>
+            {(isMenuLoading || isMealsLoading) && (
+              <p className="muted">
+                <Spinner
+                  className="spinner--inline"
+                  label={t('common.loading')}
+                />
+              </p>
             )}
             {menuError && <p className="menuError">{menuError}</p>}
-            {isMealsLoading && (
-              <p className="muted">{t('dashboard.menuAddLoading')}</p>
-            )}
             {mealsError && <p className="menuError">{mealsError}</p>}
             {!isMealsLoading && meals.length === 0 && !mealsError && (
               <p className="muted">{t('dashboard.menuAddEmpty')}</p>

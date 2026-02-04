@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import Modal from '../components/Modal/Modal'
+import Spinner from '../components/Spinner/Spinner'
 import useToast from '../hooks/useToast'
 import { updateUser } from '../services/users'
 import { getJwt } from '../utils/auth'
@@ -215,7 +216,12 @@ function Settings({
             </div>
 
             {!user ? (
-              <p className="muted">{t('settings.loading')}</p>
+            <p className="muted">
+              <Spinner
+                className="spinner--inline"
+                label={t('settings.loading')}
+              />
+            </p>
             ) : (
               <form className="authForm" onSubmit={handleSubmit}>
                 <div className="settingsGrid">
@@ -401,7 +407,14 @@ function Settings({
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {t('settings.submit')}
+                    {isSubmitting ? (
+                      <Spinner
+                        className="spinner--button"
+                        label={t('common.loading')}
+                      />
+                    ) : (
+                      t('settings.submit')
+                    )}
                   </button>
                   {submitError && (
                     <span className="tiny errorText" role="status">
