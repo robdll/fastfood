@@ -22,6 +22,11 @@ import {
   getUserById,
   updateUser,
 } from '../controllers/usersController.js'
+import {
+  createOrders,
+  getOrders,
+  getPreparationCounts,
+} from '../controllers/ordersController.js'
 
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage() })
@@ -55,5 +60,8 @@ router.delete(
 router.post('/api/users', createUser)
 router.put('/api/users/:id', requireAuth, requireSelf, updateUser)
 router.delete('/api/users/:id', requireAuth, requireSelf, deleteUser)
+router.post('/api/orders', requireAuth, createOrders)
+router.get('/api/orders', requireAuth, getOrders)
+router.get('/api/orders/preparation-counts', requireAuth, getPreparationCounts)
 
 export default router

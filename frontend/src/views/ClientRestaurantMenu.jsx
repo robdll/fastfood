@@ -158,11 +158,13 @@ function ClientRestaurantMenu({
                   {restaurant ? t('clientMenu.body') : t('clientMenu.notFound')}
                 </p>
               </div>
-              <div className="menuActions menuActions--right">
-                <Link className="btn btn--secondary" to="/dashboard/client/cart">
-                  {t('clientMenu.goToCart')}
-                </Link>
-              </div>
+              {restaurant && !isLoading && (
+                <div className="menuActions menuActions--right">
+                  <Link className="btn btn--secondary" to="/dashboard/client/cart">
+                    {t('clientMenu.goToCart')}
+                  </Link>
+                </div>
+              )}
             </div>
             {isLoading && (
               <p className="muted">
@@ -173,56 +175,58 @@ function ClientRestaurantMenu({
               </p>
             )}
             {menuError && <p className="menuError">{menuError}</p>}
-            <div className="menuTableWrapper">
-              <table className="menuTable">
-                <thead>
-                  <tr>
-                    <th>{t('dashboard.menuTableImage')}</th>
-                    <th>{t('dashboard.menuTableName')}</th>
-                    <th>{t('dashboard.menuTableType')}</th>
-                    <th>{t('dashboard.menuTablePrice')}</th>
-                    <th>{t('dashboard.menuTableOrigin')}</th>
-                    <th>{t('clientMenu.tableActions')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!isLoading && menuItems.length === 0 ? (
+            {!isLoading && (
+              <div className="menuTableWrapper">
+                <table className="menuTable">
+                  <thead>
                     <tr>
-                      <td className="menuEmpty" colSpan={6}>
-                        {t('clientMenu.empty')}
-                      </td>
+                      <th>{t('dashboard.menuTableImage')}</th>
+                      <th>{t('dashboard.menuTableName')}</th>
+                      <th>{t('dashboard.menuTableType')}</th>
+                      <th>{t('dashboard.menuTablePrice')}</th>
+                      <th>{t('dashboard.menuTableOrigin')}</th>
+                      <th>{t('clientMenu.tableActions')}</th>
                     </tr>
-                  ) : (
-                    menuItems.map((item) => (
-                      <tr key={item.id} className="menuRow">
-                        <td>
-                          <div className="menuThumb">
-                            {item.imageUrl ? (
-                              <img src={item.imageUrl} alt={item.name} />
-                            ) : (
-                              <span>{t('dashboard.menuNoImage')}</span>
-                            )}
-                          </div>
-                        </td>
-                        <td>{item.name}</td>
-                        <td>{item.category ?? '—'}</td>
-                        <td>{formatPrice(item.price)}</td>
-                        <td>{getOriginLabel(item.origin)}</td>
-                        <td className="menuTable__actions">
-                          <button
-                            className="btn btn--sky menuRow__action"
-                            type="button"
-                            onClick={() => handleAddToCart(item)}
-                          >
-                            {t('clientMenu.addToCart')}
-                          </button>
+                  </thead>
+                  <tbody>
+                    {menuItems.length === 0 ? (
+                      <tr>
+                        <td className="menuEmpty" colSpan={6}>
+                          {t('clientMenu.empty')}
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    ) : (
+                      menuItems.map((item) => (
+                        <tr key={item.id} className="menuRow">
+                          <td>
+                            <div className="menuThumb">
+                              {item.imageUrl ? (
+                                <img src={item.imageUrl} alt={item.name} />
+                              ) : (
+                                <span>{t('dashboard.menuNoImage')}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td>{item.name}</td>
+                          <td>{item.category ?? '—'}</td>
+                          <td>{formatPrice(item.price)}</td>
+                          <td>{getOriginLabel(item.origin)}</td>
+                          <td className="menuTable__actions">
+                            <button
+                              className="btn btn--sky menuRow__action"
+                              type="button"
+                              onClick={() => handleAddToCart(item)}
+                            >
+                              {t('clientMenu.addToCart')}
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
             {!restaurant && (
               <div className="menuActions">
                 <button

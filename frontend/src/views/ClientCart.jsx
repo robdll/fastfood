@@ -5,6 +5,7 @@ import CartSummary from '../components/CartSummary/CartSummary'
 import Modal from '../components/Modal/Modal'
 import Navbar from '../components/Navbar/Navbar'
 import useToast from '../hooks/useToast'
+import { createOrders, getPreparationCounts } from '../services/orders'
 import { getRestaurantById } from '../services/restaurants'
 import {
   clearCart,
@@ -12,7 +13,7 @@ import {
   removeCartItem,
   updateCartItemQuantity,
 } from '../utils/cart'
-import { addOrders, getOrders } from '../utils/orders'
+import { addOrders } from '../utils/orders'
 import '../components/MenuTable/MenuTable.css'
 
 const buildSearchUrl = (query, lang) => {
@@ -75,6 +76,7 @@ function ClientCart({
   const [deliveryOption, setDeliveryOption] = useState('pickup')
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [pendingRemoval, setPendingRemoval] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [restaurantAddresses, setRestaurantAddresses] = useState({})
   const [deliveryEstimate, setDeliveryEstimate] = useState({
     fee: 0,
@@ -267,13 +269,15 @@ function ClientCart({
       }))
       try {
         const deliveryCoords = await geocodeAddress(deliveryAddress.trim(), lang)
-        const existingOrders = getOrders()
-        const preparationCounts = existingOrders.reduce((acc, order) => {
-          if (order?.status === 'preparation' && order?.restaurantId) {
-            acc[order.restaurantId] = (acc[order.restaurantId] ?? 0) + 1
+        let preparationCounts = {}
+        if (token) {
+          try {
+            const result = await getPreparationCounts(restaurantIds, token)
+            preparationCounts = result?.counts ?? {}
+          } catch (error) {
+            console.error('Unable to load preparation counts', error)
           }
-          return acc
-        }, {})
+        }
         const estimates = await Promise.all(
           restaurantIds.map(async (id) => {
             const coords = await geocodeAddress(restaurantAddresses[id], lang)
@@ -330,6 +334,8 @@ function ClientCart({
 
   const isCheckoutDisabled =
     items.length === 0 ||
+    !token ||
+    isSubmitting ||
     (deliveryOption === 'delivery' && !deliveryAddress.trim())
 
   const createOrderId = () => {
@@ -339,55 +345,68 @@ function ClientCart({
     return `order-${Date.now()}-${Math.floor(Math.random() * 10000)}`
   }
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (isCheckoutDisabled || items.length === 0) return
-    const createdAt = new Date().toISOString()
-    const trimmedAddress = deliveryAddress.trim()
-    const orders = groupedItems.map((group) => {
-      const orderSubtotal = group.items.reduce(
-        (acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1),
-        0
-      )
-      const estimate =
-        deliveryOption === 'delivery'
-          ? deliveryEstimate.byRestaurant?.[group.restaurantId]
-          : null
-      const deliveryFeeForOrder =
-        deliveryOption === 'delivery' ? estimate?.fee ?? null : 0
-      const expectedMinutesForOrder =
-        deliveryOption === 'delivery' ? estimate?.minutes ?? null : null
-      const orderTotal =
-        deliveryOption === 'delivery'
-          ? deliveryFeeForOrder === null
-            ? null
-            : orderSubtotal + deliveryFeeForOrder
-          : orderSubtotal
-      return {
-        id: createOrderId(),
-        createdAt,
-        status: 'preparation',
-        restaurantId: group.restaurantId,
-        restaurantName: group.restaurantName,
-        restaurantAddress: group.restaurantAddress,
-        items: group.items.map((item) => ({
-          itemId: item.itemId,
-          name: item.name,
-          price: item.price ?? 0,
-          quantity: item.quantity ?? 1,
-        })),
-        subtotal: orderSubtotal,
-        deliveryFee: deliveryFeeForOrder,
-        total: orderTotal,
-        expectedMinutes: expectedMinutesForOrder,
-        deliveryOption,
-        deliveryAddress: deliveryOption === 'delivery' ? trimmedAddress : '',
-        paymentMethod,
-      }
-    })
-    addOrders(orders)
-    clearCart()
-    setItems([])
-    showToast({ type: 'success', message: t('clientCart.checkoutSuccess') })
+    setIsSubmitting(true)
+    try {
+      const createdAt = new Date().toISOString()
+      const trimmedAddress = deliveryAddress.trim()
+      const orders = groupedItems.map((group) => {
+        const orderSubtotal = group.items.reduce(
+          (acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1),
+          0
+        )
+        const estimate =
+          deliveryOption === 'delivery'
+            ? deliveryEstimate.byRestaurant?.[group.restaurantId]
+            : null
+        const deliveryFeeForOrder =
+          deliveryOption === 'delivery' ? estimate?.fee ?? null : 0
+        const expectedMinutesForOrder =
+          deliveryOption === 'delivery' ? estimate?.minutes ?? null : null
+        const orderTotal =
+          deliveryOption === 'delivery'
+            ? deliveryFeeForOrder === null
+              ? null
+              : orderSubtotal + deliveryFeeForOrder
+            : orderSubtotal
+        return {
+          id: createOrderId(),
+          createdAt,
+          status: 'preparation',
+          restaurantId: group.restaurantId,
+          restaurantName: group.restaurantName,
+          restaurantAddress: group.restaurantAddress,
+          items: group.items.map((item) => ({
+            itemId: item.itemId,
+            name: item.name,
+            price: item.price ?? 0,
+            quantity: item.quantity ?? 1,
+          })),
+          subtotal: orderSubtotal,
+          deliveryFee: deliveryFeeForOrder,
+          total: orderTotal,
+          expectedMinutes: expectedMinutesForOrder,
+          deliveryOption,
+          deliveryAddress: deliveryOption === 'delivery' ? trimmedAddress : '',
+          paymentMethod,
+        }
+      })
+      const result = await createOrders(orders, token, t('clientCart.checkoutError'))
+      const savedOrders = result?.orders ?? orders
+      addOrders(savedOrders)
+      clearCart()
+      setItems([])
+      showToast({ type: 'success', message: t('clientCart.checkoutSuccess') })
+    } catch (error) {
+      console.error('Unable to create orders', error)
+      showToast({
+        type: 'error',
+        message: error?.message ?? t('clientCart.checkoutError'),
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -417,25 +436,28 @@ function ClientCart({
             onIncrease={handleIncrease}
             onDecrease={handleDecrease}
           />
-          <CartCheckout
-            paymentMethod={paymentMethod}
-            onPaymentMethodChange={setPaymentMethod}
-            deliveryOption={deliveryOption}
-            onDeliveryOptionChange={setDeliveryOption}
-            deliveryAddress={deliveryAddress}
-            onDeliveryAddressChange={setDeliveryAddress}
-            isDisabled={isCheckoutDisabled}
-            subtotal={subtotal}
-            deliveryFee={deliveryFee}
-            total={total}
-            expectedMinutes={expectedMinutes}
-            isEstimateLoading={deliveryEstimate.isLoading}
-            hasEstimateError={Boolean(deliveryEstimate.error)}
-            formatPrice={formatPrice}
-            lang={lang}
-            t={t}
-            onCheckout={handleCheckout}
-          />
+          {items.length > 0 && (
+            <CartCheckout
+              paymentMethod={paymentMethod}
+              onPaymentMethodChange={setPaymentMethod}
+              deliveryOption={deliveryOption}
+              onDeliveryOptionChange={setDeliveryOption}
+              deliveryAddress={deliveryAddress}
+              onDeliveryAddressChange={setDeliveryAddress}
+              isDisabled={isCheckoutDisabled}
+              isCartEmpty={items.length === 0}
+              subtotal={subtotal}
+              deliveryFee={deliveryFee}
+              total={total}
+              expectedMinutes={expectedMinutes}
+              isEstimateLoading={deliveryEstimate.isLoading}
+              hasEstimateError={Boolean(deliveryEstimate.error)}
+              formatPrice={formatPrice}
+              lang={lang}
+              t={t}
+              onCheckout={handleCheckout}
+            />
+          )}
         </div>
       </main>
       <Modal
