@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
+import MenuItemForm from '../components/MenuItemForm/MenuItemForm'
 import Navbar from '../components/Navbar/Navbar'
 import mealCategories from '../constants/mealCategories'
 import useToast from '../hooks/useToast'
+import { getMeals } from '../services/meals'
 import { getMenuByRestaurantId, updateMenuItem } from '../services/menus'
+import { getMealIngredients } from '../utils/meals'
 
 function MenuItemDetail({
   user,
@@ -23,10 +26,12 @@ function MenuItemDetail({
   const [menu, setMenu] = useState(null)
   const [menuError, setMenuError] = useState(null)
   const [isMenuLoading, setIsMenuLoading] = useState(false)
+  const [catalogMeals, setCatalogMeals] = useState([])
   const [isUpdatingItem, setIsUpdatingItem] = useState(false)
   const [updateError, setUpdateError] = useState(null)
   const [editPrice, setEditPrice] = useState('')
   const [editCategory, setEditCategory] = useState('')
+  const [removedIngredients, setRemovedIngredients] = useState([])
   const [editPhoto, setEditPhoto] = useState(null)
   const [editPhotoPreview, setEditPhotoPreview] = useState(null)
 
@@ -64,6 +69,26 @@ function MenuItemDetail({
     }
   }, [restaurantId, t, token])
 
+  useEffect(() => {
+    if (!token) return undefined
+
+    let cancelled = false
+
+    async function loadMeals() {
+      try {
+        const data = await getMeals(token, t('dashboard.menuAddError'))
+        if (!cancelled) setCatalogMeals(data ?? [])
+      } catch (error) {
+        if (!cancelled) setCatalogMeals([])
+      }
+    }
+
+    loadMeals()
+    return () => {
+      cancelled = true
+    }
+  }, [t, token])
+
   const menuItems = useMemo(() => {
     const items = menu?.items ?? []
     return items.map((item, index) => {
@@ -71,8 +96,6 @@ function MenuItemDetail({
         item?.origin ??
         item?.source ??
         (item?.mealId || item?.meal ? 'catalog' : 'custom')
-      const type =
-        item?.type ?? (origin === 'catalog' ? 'catalog' : 'custom')
       const name =
         item?.name ??
         item?.title ??
@@ -86,11 +109,13 @@ function MenuItemDetail({
         id: item?._id ?? item?.mealId ?? `${origin}-${index}`,
         mealId: item?.mealId ?? item?.meal?._id ?? item?.idMeal ?? null,
         name,
-        type,
         price,
         origin,
         imageUrl,
         category: item?.category ?? item?.mealCategory ?? null,
+        removedIngredients: item?.removedIngredients ?? [],
+        ingredients: item?.ingredients ?? null,
+        measures: item?.measures ?? null,
         raw: item,
       }
     })
@@ -116,10 +141,41 @@ function MenuItemDetail({
   }, [menuItem])
   const showEmptyCategory = !menuItem?.category
 
+  const ingredients = useMemo(() => {
+    if (!menuItem) return []
+    if (Array.isArray(menuItem.ingredients) && menuItem.ingredients.length > 0) {
+      return getMealIngredients(menuItem)
+    }
+    const matched = catalogMeals.find((meal) => {
+      const id = meal?._id?.toString() ?? meal?.idMeal?.toString()
+      return id && (id === menuItem.mealId || id === menuItem.id)
+    })
+    return getMealIngredients(matched)
+  }, [catalogMeals, menuItem])
+
+  const normalizedRemovedIngredients = useMemo(
+    () =>
+      (removedIngredients ?? [])
+        .map((item) => item?.toString().trim())
+        .filter(Boolean)
+        .sort(),
+    [removedIngredients]
+  )
+
+  const initialRemovedIngredients = useMemo(
+    () =>
+      (menuItem?.removedIngredients ?? [])
+        .map((item) => item?.toString().trim())
+        .filter(Boolean)
+        .sort(),
+    [menuItem]
+  )
+
   useEffect(() => {
     if (!menuItem) {
       setEditPrice('')
       setEditCategory('')
+      setRemovedIngredients([])
       setEditPhoto(null)
       setEditPhotoPreview((prev) => {
         if (prev) URL.revokeObjectURL(prev)
@@ -132,6 +188,7 @@ function MenuItemDetail({
 
     setEditPrice(menuItem.price ?? '')
     setEditCategory(menuItem.category ?? '')
+    setRemovedIngredients(menuItem.removedIngredients ?? [])
     setEditPhoto(null)
     setEditPhotoPreview((prev) => {
       if (prev) URL.revokeObjectURL(prev)
@@ -155,22 +212,6 @@ function MenuItemDetail({
     })
   }
 
-  const formatPrice = (value) => {
-    if (value === null || value === undefined || value === '') return '—'
-    const numeric = Number(value)
-    if (!Number.isNaN(numeric)) {
-      try {
-        return new Intl.NumberFormat(lang, {
-          style: 'currency',
-          currency: 'EUR',
-        }).format(numeric)
-      } catch (error) {
-        return `€ ${numeric}`
-      }
-    }
-    return value.toString()
-  }
-
   const getOriginLabel = (origin) =>
     origin === 'catalog'
       ? t('dashboard.menuOriginCatalog')
@@ -183,16 +224,21 @@ function MenuItemDetail({
     Number(editPrice) !== Number(menuItem.price ?? '')
   const hasCategoryUpdate =
     menuItem && editCategory !== (menuItem.category ?? '')
+  const hasRemovedIngredientsUpdate =
+    JSON.stringify(normalizedRemovedIngredients) !==
+    JSON.stringify(initialRemovedIngredients)
   const canUpdateItem =
     Boolean(menuItem) &&
     hasEditPrice &&
-    (hasPriceUpdate || editPhoto || hasCategoryUpdate)
+    (hasPriceUpdate || editPhoto || hasCategoryUpdate || hasRemovedIngredientsUpdate)
 
   const handleUpdateMenuItem = async () => {
     if (!menuItem || isUpdatingItem) return
     if (!restaurantId || !token) return
     if (!hasEditPrice) return
-    if (!hasPriceUpdate && !editPhoto && !hasCategoryUpdate) return
+    if (!hasPriceUpdate && !editPhoto && !hasCategoryUpdate && !hasRemovedIngredientsUpdate) {
+      return
+    }
 
     setIsUpdatingItem(true)
     setUpdateError(null)
@@ -205,6 +251,9 @@ function MenuItemDetail({
           price: hasPriceUpdate ? editPrice : undefined,
           photo: editPhoto ?? undefined,
           category: hasCategoryUpdate ? editCategory : undefined,
+          removedIngredients: hasRemovedIngredientsUpdate
+            ? normalizedRemovedIngredients
+            : undefined,
         },
         t('dashboard.menuDetailUpdateError')
       )
@@ -269,96 +318,38 @@ function MenuItemDetail({
               <p className="menuError">{t('dashboard.menuDetailNotFound')}</p>
             )}
             {menuItem && (
-              <div className="menuDetail">
-                <div className="menuDetail__layout">
-                  <div className="menuDetail__image">
-                    <label
-                      className="menuDetail__imagePicker"
-                      onDragOver={(event) => event.preventDefault()}
-                      onDrop={(event) => {
-                        event.preventDefault()
-                        const file = event.dataTransfer?.files?.[0]
-                        if (!file) return
-                        setEditPhotoFile(file)
-                      }}
-                    >
-                      <input
-                        className="menuDetail__imageInput"
-                        type="file"
-                        accept="image/*"
-                        onChange={(event) =>
-                          setEditPhotoFile(event.target.files?.[0] ?? null)
-                        }
-                      />
-                      {editPhotoPreview ? (
-                        <img src={editPhotoPreview} alt={menuItem.name} />
-                      ) : menuItem.imageUrl ? (
-                        <img src={menuItem.imageUrl} alt={menuItem.name} />
-                      ) : (
-                        <div className="menuThumb menuThumb--large">
-                          <span>{t('dashboard.menuNoImage')}</span>
-                        </div>
-                      )}
-                      <span className="menuDetail__imageHint">
-                        {t('dashboard.menuDetailUpdatePhotoHint')}
-                      </span>
-                    </label>
-                  </div>
-                  <div className="menuDetail__panel">
-                    <div className="menuDetail__formGrid">
-                      <label className="mealField">
-                        <span>{t('dashboard.menuDetailPrice')}</span>
-                        <input
-                          className="input"
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          required
-                          value={editPrice}
-                          onChange={(event) => setEditPrice(event.target.value)}
-                        />
-                      </label>
-                      <label className="mealField">
-                        <span>{t('dashboard.menuDetailOrigin')}</span>
-                        <input
-                          className="input"
-                          type="text"
-                          value={getOriginLabel(menuItem.origin)}
-                          readOnly
-                        />
-                      </label>
-                      <label className="mealField">
-                        <span>{t('dashboard.menuDetailCategory')}</span>
-                        <select
-                          className="input"
-                          value={editCategory}
-                          onChange={(event) => setEditCategory(event.target.value)}
-                        >
-                          {showEmptyCategory && <option value="">{'—'}</option>}
-                          {categoryOptions.map((category) => (
-                            <option key={category} value={category}>
-                              {category}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    </div>
-                    {updateError && <p className="menuError">{updateError}</p>}
-                    <div className="menuDetail__actions">
-                      <button
-                        className="btn btn--primary"
-                        type="button"
-                        onClick={handleUpdateMenuItem}
-                        disabled={!canUpdateItem || isUpdatingItem}
-                      >
-                        {isUpdatingItem
-                          ? t('dashboard.menuDetailUpdateSaving')
-                          : t('dashboard.menuDetailUpdateAction')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <>
+                <MenuItemForm
+                  t={t}
+                  imageUrl={menuItem.imageUrl}
+                  photoPreview={editPhotoPreview}
+                  onPhotoChange={setEditPhotoFile}
+                  photoHint={t('dashboard.menuDetailUpdatePhotoHint')}
+                  price={editPrice}
+                  onPriceChange={setEditPrice}
+                  category={editCategory}
+                  onCategoryChange={setEditCategory}
+                  categories={categoryOptions}
+                  ingredients={ingredients}
+                  removedIngredients={removedIngredients}
+                  onRemovedIngredientsChange={setRemovedIngredients}
+                  ingredientsLabel={t('dashboard.menuDetailIngredients')}
+                  ingredientsHint={t('dashboard.menuDetailIngredientsHint')}
+                  originLabel={t('dashboard.menuDetailOrigin')}
+                  originValue={getOriginLabel(menuItem.origin)}
+                  showOrigin
+                  isSubmitting={isUpdatingItem}
+                  submitLabel={
+                    isUpdatingItem
+                      ? t('dashboard.menuDetailUpdateSaving')
+                      : t('dashboard.menuDetailUpdateAction')
+                  }
+                  disableSubmit={!canUpdateItem}
+                  onSubmit={handleUpdateMenuItem}
+                  showEmptyCategory={showEmptyCategory}
+                />
+                {updateError && <p className="menuError">{updateError}</p>}
+              </>
             )}
           </section>
         </div>

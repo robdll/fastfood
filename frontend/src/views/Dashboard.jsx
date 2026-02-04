@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
-import Modal from '../components/Modal/Modal'
+import MenuTable from '../components/MenuTable/MenuTable'
 import Navbar from '../components/Navbar/Navbar'
-import { getMeals } from '../services/meals'
-import {
-  addMenuItems,
-  getMenuByRestaurantId,
-} from '../services/menus'
+import { getMenuByRestaurantId } from '../services/menus'
 
 function Dashboard({
   variant = 'client',
@@ -35,12 +31,6 @@ function Dashboard({
   const [menu, setMenu] = useState(null)
   const [menuError, setMenuError] = useState(null)
   const [isMenuLoading, setIsMenuLoading] = useState(false)
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [meals, setMeals] = useState([])
-  const [mealsError, setMealsError] = useState(null)
-  const [isMealsLoading, setIsMealsLoading] = useState(false)
-  const [selectedMeals, setSelectedMeals] = useState([])
-  const [isSavingMeals, setIsSavingMeals] = useState(false)
 
   useEffect(() => {
     if (isClient) return undefined
@@ -77,35 +67,6 @@ function Dashboard({
     }
   }, [isClient, restaurantId, t, token])
 
-  useEffect(() => {
-    if (!isAddModalOpen) return undefined
-    if (!token) return undefined
-
-    let cancelled = false
-
-    async function loadMeals() {
-      setIsMealsLoading(true)
-      setMealsError(null)
-      try {
-        const data = await getMeals(token, t('dashboard.menuAddError'))
-        if (!cancelled) setMeals(data ?? [])
-      } catch (error) {
-        if (!cancelled) {
-          setMeals([])
-          setMealsError(error?.message ?? t('dashboard.menuAddError'))
-        }
-      } finally {
-        if (!cancelled) setIsMealsLoading(false)
-      }
-    }
-
-    loadMeals()
-    return () => {
-      cancelled = true
-    }
-  }, [isAddModalOpen, t, token])
-
-
   const menuItems = useMemo(() => {
     const items = menu?.items ?? []
     return items.map((item, index) => {
@@ -113,8 +74,6 @@ function Dashboard({
         item?.origin ??
         item?.source ??
         (item?.mealId || item?.meal ? 'catalog' : 'custom')
-      const type =
-        item?.type ?? (origin === 'catalog' ? 'catalog' : 'custom')
       const name =
         item?.name ??
         item?.title ??
@@ -128,7 +87,6 @@ function Dashboard({
         id: item?._id ?? item?.mealId ?? `${origin}-${index}`,
         mealId: item?.mealId ?? item?.meal?._id ?? item?.idMeal ?? null,
         name,
-        type,
         price,
         origin,
         imageUrl,
@@ -137,117 +95,6 @@ function Dashboard({
       }
     })
   }, [menu])
-
-  const existingMealIds = useMemo(() => {
-    const ids = new Set()
-    ;(menu?.items ?? []).forEach((item) => {
-      const candidates = [
-        item?.mealId,
-        item?.meal?._id,
-        item?.meal?.idMeal,
-        item?.idMeal,
-      ]
-      candidates
-        .filter(Boolean)
-        .map((value) => value.toString())
-        .forEach((value) => ids.add(value))
-    })
-    return ids
-  }, [menu])
-
-
-  const toggleMealSelection = (mealId) => {
-    setSelectedMeals((prev) => {
-      const existing = prev.find((item) => item.mealId === mealId)
-      if (existing) {
-        if (existing.photoPreview) {
-          URL.revokeObjectURL(existing.photoPreview)
-        }
-        return prev.filter((item) => item.mealId !== mealId)
-      }
-      return [
-        ...prev,
-        { mealId, price: '', photo: null, photoPreview: null },
-      ]
-    })
-  }
-
-  const updateMealSelection = (mealId, updates) => {
-    setSelectedMeals((prev) =>
-      prev.map((item) =>
-        item.mealId === mealId
-          ? {
-              ...item,
-              ...updates,
-              photoPreview:
-                updates.photo !== undefined
-                  ? updates.photo
-                    ? (() => {
-                        if (item.photoPreview) {
-                          URL.revokeObjectURL(item.photoPreview)
-                        }
-                        return URL.createObjectURL(updates.photo)
-                      })()
-                    : (() => {
-                        if (item.photoPreview) {
-                          URL.revokeObjectURL(item.photoPreview)
-                        }
-                        return null
-                      })()
-                  : item.photoPreview,
-            }
-          : item
-      )
-    )
-  }
-
-  const clearSelectedMeals = () => {
-    setSelectedMeals((prev) => {
-      prev.forEach((item) => {
-        if (item.photoPreview) URL.revokeObjectURL(item.photoPreview)
-      })
-      return []
-    })
-  }
-
-  const isSelectionValid =
-    selectedMeals.length > 0 &&
-    selectedMeals.every(
-      (item) =>
-        item.price !== '' &&
-        item.price !== null &&
-        item.price !== undefined &&
-        item.photo
-    )
-  const hasMissingPrice =
-    selectedMeals.length > 0 &&
-    selectedMeals.some(
-      (item) =>
-        item.price === '' || item.price === null || item.price === undefined
-    )
-  const hasMissingPhoto =
-    selectedMeals.length > 0 && selectedMeals.some((item) => !item.photo)
-
-  const handleSaveMeals = async () => {
-    if (isSavingMeals || !isSelectionValid) return
-    if (!restaurantId || !token) return
-    setIsSavingMeals(true)
-    try {
-      const updated = await addMenuItems(
-        restaurantId,
-        token,
-        selectedMeals,
-        t('dashboard.menuAddSaveError')
-      )
-      setMenu(updated)
-      clearSelectedMeals()
-      setIsAddModalOpen(false)
-    } catch (error) {
-      setMealsError(error?.message ?? t('dashboard.menuAddSaveError'))
-    } finally {
-      setIsSavingMeals(false)
-    }
-  }
 
 
   const formatPrice = (value) => {
@@ -270,10 +117,6 @@ function Dashboard({
     origin === 'catalog'
       ? t('dashboard.menuOriginCatalog')
       : t('dashboard.menuOriginCustom')
-  const getTypeLabel = (type) =>
-    type === 'catalog'
-      ? t('dashboard.menuTypeCatalog')
-      : t('dashboard.menuTypeCustom')
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -312,7 +155,7 @@ function Dashboard({
                   <button
                     className="btn btn--secondary"
                     type="button"
-                    onClick={() => setIsAddModalOpen(true)}
+                    onClick={() => navigate('/dashboard/restaurant/menu/add')}
                   >
                     {t('dashboard.menuAddButton')}
                   </button>
@@ -322,187 +165,23 @@ function Dashboard({
                 <p className="muted">{t('dashboard.menuLoading')}</p>
               )}
               {menuError && <p className="menuError">{menuError}</p>}
-              <div className="menuTableWrapper">
-                <table className="menuTable">
-                  <thead>
-                    <tr>
-                      <th>{t('dashboard.menuTableImage')}</th>
-                      <th>{t('dashboard.menuTableName')}</th>
-                      <th>{t('dashboard.menuTableType')}</th>
-                      <th>{t('dashboard.menuTablePrice')}</th>
-                      <th>{t('dashboard.menuTableOrigin')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {!isMenuLoading && menuItems.length === 0 ? (
-                      <tr>
-                        <td className="menuEmpty" colSpan={5}>
-                          {t('dashboard.menuEmpty')}
-                        </td>
-                      </tr>
-                    ) : (
-                      menuItems.map((item) => (
-                        <tr
-                          key={item.id}
-                          className="menuRow"
-                          onClick={() =>
-                            navigate(
-                              `/dashboard/restaurant/menu/${item.mealId ?? item.id}`
-                            )
-                          }
-                        >
-                          <td>
-                            <div className="menuThumb">
-                              {item.imageUrl ? (
-                                <img src={item.imageUrl} alt={item.name} />
-                              ) : (
-                                <span>{t('dashboard.menuNoImage')}</span>
-                              )}
-                            </div>
-                          </td>
-                          <td>{item.name}</td>
-                          <td>{item.category ?? '—'}</td>
-                          <td>{formatPrice(item.price)}</td>
-                          <td>{getOriginLabel(item.origin)}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              <MenuTable
+                items={menuItems}
+                isLoading={isMenuLoading}
+                emptyLabel={t('dashboard.menuEmpty')}
+                formatPrice={formatPrice}
+                getOriginLabel={getOriginLabel}
+                onRowClick={(item) =>
+                  navigate(
+                    `/dashboard/restaurant/menu/${item.mealId ?? item.id}`
+                  )
+                }
+                t={t}
+              />
             </section>
           )}
         </div>
       </main>
-      <Modal
-        isOpen={!isClient && isAddModalOpen}
-        title={t('dashboard.menuAddTitle')}
-        description={t('dashboard.menuAddDescription')}
-        submitLabel={
-          isSavingMeals
-            ? t('dashboard.menuAddSaving')
-            : t('dashboard.menuAddConfirm')
-        }
-        cancelLabel={t('dashboard.menuAddCancel')}
-        onSubmit={handleSaveMeals}
-        onCancel={() => {
-          if (isSavingMeals) return
-          setIsAddModalOpen(false)
-          clearSelectedMeals()
-        }}
-        submitVariant="primary"
-        cancelVariant="secondary"
-      >
-        {isMealsLoading && (
-          <p className="muted">{t('dashboard.menuAddLoading')}</p>
-        )}
-        {mealsError && <p className="menuError">{mealsError}</p>}
-        {!isMealsLoading && meals.length === 0 && !mealsError && (
-          <p className="muted">{t('dashboard.menuAddEmpty')}</p>
-        )}
-        {!isMealsLoading && meals.length > 0 && (
-          <div className="mealList">
-            {meals.map((meal) => {
-              const mealId = meal?._id?.toString() ?? meal?.idMeal?.toString()
-              if (!mealId) return null
-              const isAlreadyAdded = existingMealIds.has(mealId)
-              const selected = selectedMeals.find(
-                (item) => item.mealId === mealId
-              )
-              return (
-                <label
-                  key={mealId}
-                  className={`mealItem ${
-                    isAlreadyAdded ? 'mealItem--disabled' : ''
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={Boolean(selected)}
-                    disabled={isAlreadyAdded || isSavingMeals}
-                    onChange={() => toggleMealSelection(mealId)}
-                  />
-                  <span className="mealItem__name">{meal.strMeal}</span>
-                  {meal.strCategory && (
-                    <span className="mealItem__meta">{meal.strCategory}</span>
-                  )}
-                  {isAlreadyAdded && (
-                    <span className="mealItem__meta">
-                      {t('dashboard.menuAddAlready')}
-                    </span>
-                  )}
-                  {selected && !isAlreadyAdded && (
-                    <div className="mealItem__fields">
-                      <label className="mealField">
-                        <span>{t('dashboard.menuAddPrice')}</span>
-                        <input
-                          className="input"
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          required
-                          value={selected.price}
-                          onChange={(event) =>
-                            updateMealSelection(mealId, {
-                              price: event.target.value,
-                            })
-                          }
-                        />
-                      </label>
-                      <div className="mealField">
-                        <span>{t('dashboard.menuAddPhoto')}</span>
-                        <label
-                          className="photoDrop"
-                          onDragOver={(event) => event.preventDefault()}
-                          onDrop={(event) => {
-                            event.preventDefault()
-                            const file = event.dataTransfer?.files?.[0]
-                            if (!file) return
-                            updateMealSelection(mealId, { photo: file })
-                          }}
-                        >
-                          <input
-                            className="photoDrop__input"
-                            type="file"
-                            accept="image/*"
-                            required
-                            onChange={(event) =>
-                              updateMealSelection(mealId, {
-                                photo: event.target.files?.[0] ?? null,
-                              })
-                            }
-                          />
-                          {selected.photoPreview ? (
-                            <img
-                              className="photoDrop__preview"
-                              src={selected.photoPreview}
-                              alt={meal.strMeal}
-                            />
-                          ) : (
-                            <span className="photoDrop__text">
-                              {t('dashboard.menuAddPhotoHint')}
-                            </span>
-                          )}
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </label>
-              )
-            })}
-          </div>
-        )}
-        {!isSelectionValid && selectedMeals.length > 0 && (
-          <>
-            {hasMissingPrice && (
-              <p className="menuError">{t('dashboard.menuAddMissingPrice')}</p>
-            )}
-            {hasMissingPhoto && (
-              <p className="menuError">{t('dashboard.menuAddMissingPhoto')}</p>
-            )}
-          </>
-        )}
-      </Modal>
     </div>
   )
 }

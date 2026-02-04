@@ -185,6 +185,36 @@
   background: rgba(239, 200, 86, 0.2);
 }
 
+.menuRow--disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.menuRow--disabled:hover {
+  background: transparent;
+}
+
+.menuRow--selected {
+  background: rgba(239, 200, 86, 0.35);
+}
+
+.menuRow__action {
+  padding: 6px 10px;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+.menuRow__accordion td {
+  padding: 16px 12px;
+  border-bottom: none;
+  background: rgba(239, 200, 86, 0.08);
+}
+
+.menuAccordion {
+  display: grid;
+  gap: 12px;
+}
+
 .menuEmpty {
   text-align: center;
   padding: 18px 12px;
@@ -398,6 +428,39 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.menuDetail__ingredients {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.menuDetail__ingredientsHint {
+  margin: 0;
+}
+
+.menuDetail__ingredientsList {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ingredientItem {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.ingredientItem__name {
+  font-weight: 600;
+}
+
+.ingredientItem__meta {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
 .menuDetail__actions {
   margin-top: 20px;
   display: flex;
@@ -421,6 +484,10 @@
   }
 
   .menuDetail__formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .menuDetail__ingredientsList {
     grid-template-columns: 1fr;
   }
 
