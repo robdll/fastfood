@@ -16,10 +16,8 @@ function OrderCard({
   return (
     <article className="card orderCard">
       <div className="orderCard__header">
-        <div>
-          <h3>{title}</h3>
-          {subtitle && <p className="muted">{subtitle}</p>}
-        </div>
+        <h3>{title}</h3>
+        {subtitle && <p className="muted">{subtitle}</p>}
         <div className="orderCard__actions">
           <span className="orderCard__status">{statusText}</span>
           {action}
