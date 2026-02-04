@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
+import DashboardCard from '../components/DashboardCard/DashboardCard'
 import Modal from '../components/Modal/Modal'
 import MenuTable from '../components/MenuTable/MenuTable'
 import Navbar from '../components/Navbar/Navbar'
@@ -26,9 +27,6 @@ function Dashboard({
   const title = isClient
     ? t('dashboard.clientTitle')
     : t('dashboard.restaurantTitle')
-  const body = isClient
-    ? t('dashboard.clientBody')
-    : t('dashboard.restaurantBody')
   const switchLabel = isClient
     ? t('dashboard.switchToRestaurant')
     : t('dashboard.switchToClient')
@@ -177,14 +175,28 @@ function Dashboard({
       <main>
         <div className="page">
           {isClient && (
-            <section className="card">
-              <h2>{title}</h2>
-              <p className="muted">{body}</p>
-              {canSwitch && switchPath && (
-                <Link className="btn btn--secondary" to={switchPath}>
-                  {switchLabel}
-                </Link>
-              )}
+            <section className="grid dashboardCards">
+              <DashboardCard
+                title={t('clientDashboard.searchTitle')}
+                body={t('clientDashboard.searchBody')}
+                actionLabel={t('clientDashboard.searchAction')}
+                actionTo="/dashboard/client/restaurants"
+                actionVariant="btn--secondary"
+              />
+              <DashboardCard
+                title={t('clientDashboard.ordersTitle')}
+                body={t('clientDashboard.ordersBody')}
+                actionLabel={t('clientDashboard.ordersAction')}
+                actionTo="/dashboard/client/orders"
+                actionVariant="btn--sky"
+              />
+              <DashboardCard
+                title={t('clientDashboard.cartTitle')}
+                body={t('clientDashboard.cartBody')}
+                actionLabel={t('clientDashboard.cartAction')}
+                actionTo="/dashboard/client/cart"
+                actionVariant="btn--primary"
+              />
             </section>
           )}
           {!isClient && (

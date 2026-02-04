@@ -69,6 +69,10 @@
   margin-top: 18px;
 }
 
+.dashboardCards {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
 .landingSection {
   display: flex;
   align-items: stretch;

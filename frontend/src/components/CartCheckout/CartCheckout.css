@@ -1,0 +1,31 @@
+.cartForm {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.cartForm__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.cartForm__field {
+  display: grid;
+  gap: 6px;
+  font-weight: 800;
+  font-family: var(--font-sans);
+}
+
+.cartForm__options {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.cartForm__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}

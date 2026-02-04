@@ -2,6 +2,10 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import AuthPage from '../views/AuthPage'
 import Dashboard from '../views/Dashboard'
 import Landing from '../views/Landing'
+import ClientCart from '../views/ClientCart'
+import ClientOrders from '../views/ClientOrders'
+import ClientRestaurantMenu from '../views/ClientRestaurantMenu'
+import ClientRestaurants from '../views/ClientRestaurants'
 import MenuAddItem from '../views/MenuAddItem'
 import MenuCreateItem from '../views/MenuCreateItem'
 import MenuItemDetail from '../views/MenuItemDetail'
@@ -119,6 +123,83 @@ function AppRoutes({
               token={token}
               lang={lang}
               onLangChange={onLangChange}
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/client/restaurants"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <ClientRestaurants
+              user={user}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/restaurant"
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/client/restaurants/:restaurantId"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <ClientRestaurantMenu
+              user={user}
+              token={token}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/restaurant"
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/client/cart"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <ClientCart
+              user={user}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/restaurant"
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/client/orders"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <ClientOrders
+              user={user}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/restaurant"
               t={t}
             />
           </RequireAuth>

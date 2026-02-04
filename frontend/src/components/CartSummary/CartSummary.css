@@ -1,0 +1,8 @@
+.cartTotals {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
