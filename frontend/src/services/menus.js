@@ -30,7 +30,12 @@ const addMenuItems = async (
   fallbackMessage = 'Unable to update menu.'
 ) => {
   const formData = new FormData()
-  const payloadItems = items.map(({ mealId, price }) => ({ mealId, price }))
+  const payloadItems = items.map(({ mealId, price, category, removedIngredients }) => ({
+    mealId,
+    price,
+    category,
+    removedIngredients,
+  }))
   formData.append('items', JSON.stringify(payloadItems))
   items.forEach((item) => {
     if (item.photo) {
@@ -73,6 +78,9 @@ const updateMenuItem = async (
   }
   if (updates?.category !== undefined && updates?.category !== null) {
     formData.append('category', updates.category)
+  }
+  if (updates?.removedIngredients !== undefined) {
+    formData.append('removedIngredients', JSON.stringify(updates.removedIngredients))
   }
   if (updates?.photo) {
     formData.append('photo', updates.photo)

@@ -55,6 +55,8 @@ const normalizeMenuItems = (items = []) =>
     .map((item) => ({
       mealId: item?.mealId?.toString().trim(),
       price: item?.price,
+      category: item?.category?.toString().trim(),
+      removedIngredients: normalizeRemovedIngredients(item?.removedIngredients),
     }))
     .filter((item) => item.mealId)
 
@@ -64,6 +66,28 @@ const normalizePrice = (value) => {
   if (Number.isNaN(numeric)) return null
   if (numeric < 0) return null
   return numeric
+}
+
+const normalizeRemovedIngredients = (value) => {
+  if (!value) return []
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => item?.toString().trim())
+      .filter(Boolean)
+  }
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value)
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map((item) => item?.toString().trim())
+          .filter(Boolean)
+      }
+    } catch (error) {
+      return []
+    }
+  }
+  return []
 }
 
 const buildExistingMealIdSet = (items = []) => {
@@ -193,6 +217,10 @@ const addMenuItems = async (req, res) => {
         res.status(400).json({ error: 'Price is required for each menu item.' })
         return
       }
+      const normalizedCategory = payload?.category?.toString().trim()
+      const normalizedRemovedIngredients = normalizeRemovedIngredients(
+        payload?.removedIngredients
+      )
 
       const file = photoByMealId.get(id)
       let photoUrl = null
@@ -208,12 +236,14 @@ const addMenuItems = async (req, res) => {
       itemsToAdd.push({
         mealId: meal._id?.toString() ?? meal.idMeal?.toString(),
         name: meal.strMeal ?? 'Meal',
-        category: meal.strCategory ?? null,
+        category: normalizedCategory || meal.strCategory || null,
         origin: 'catalog',
-        type: 'catalog',
         price: normalizedPrice,
         photoUrl,
         photoPublicId,
+        removedIngredients: normalizedRemovedIngredients,
+        ingredients: Array.isArray(meal.ingredients) ? meal.ingredients : [],
+        measures: Array.isArray(meal.measures) ? meal.measures : [],
         createdAt: new Date(),
       })
     }
@@ -266,6 +296,13 @@ const updateMenuItem = async (req, res) => {
   const normalizedCategory = hasCategoryField
     ? body.category?.toString().trim()
     : null
+  const hasRemovedIngredientsField = Object.prototype.hasOwnProperty.call(
+    body,
+    'removedIngredients'
+  )
+  const normalizedRemovedIngredients = hasRemovedIngredientsField
+    ? normalizeRemovedIngredients(body.removedIngredients)
+    : []
   if (hasPriceField && normalizedPrice === null) {
     res.status(400).json({ error: 'Price is required to update the dish.' })
     return
@@ -278,7 +315,7 @@ const updateMenuItem = async (req, res) => {
   const files = Array.isArray(req.files) ? req.files : []
   const photoFile = files.find((file) => file.fieldname === 'photo')
 
-  if (!hasPriceField && !photoFile && !hasCategoryField) {
+  if (!hasPriceField && !photoFile && !hasCategoryField && !hasRemovedIngredientsField) {
     res.status(400).json({ error: 'At least one update is required.' })
     return
   }
@@ -302,6 +339,10 @@ const updateMenuItem = async (req, res) => {
 
     if (hasCategoryField) {
       updatedItem.category = normalizedCategory
+    }
+
+    if (hasRemovedIngredientsField) {
+      updatedItem.removedIngredients = normalizedRemovedIngredients
     }
 
     if (photoFile) {
