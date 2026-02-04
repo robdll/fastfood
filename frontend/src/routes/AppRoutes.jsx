@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import AuthPage from '../views/AuthPage'
 import Dashboard from '../views/Dashboard'
 import Landing from '../views/Landing'
+import MenuItemDetail from '../views/MenuItemDetail'
 import Settings from '../views/Settings'
 
 function RequireAuth({ isAuthed, children }) {
@@ -116,6 +117,26 @@ function AppRoutes({
               token={token}
               lang={lang}
               onLangChange={onLangChange}
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/restaurant/menu/:itemId"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <MenuItemDetail
+              user={user}
+              token={token}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/client"
               t={t}
             />
           </RequireAuth>

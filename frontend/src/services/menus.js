@@ -60,4 +60,44 @@ const addMenuItems = async (
   return response.json()
 }
 
-export { addMenuItems, getMenuByRestaurantId }
+const updateMenuItem = async (
+  restaurantId,
+  mealId,
+  token,
+  updates,
+  fallbackMessage = 'Unable to update the dish.'
+) => {
+  const formData = new FormData()
+  if (updates?.price !== undefined && updates?.price !== null && updates?.price !== '') {
+    formData.append('price', updates.price)
+  }
+  if (updates?.category !== undefined && updates?.category !== null) {
+    formData.append('category', updates.category)
+  }
+  if (updates?.photo) {
+    formData.append('photo', updates.photo)
+  }
+
+  const response = await fetch(`/api/menus/${restaurantId}/items/${mealId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  })
+
+  if (!response.ok) {
+    let message = fallbackMessage
+    try {
+      const data = await response.json()
+      if (data?.error) message = data.error
+    } catch (error) {
+      console.error('Menu item update response error parsing failed', error)
+    }
+    throw new Error(message)
+  }
+
+  return response.json()
+}
+
+export { addMenuItems, getMenuByRestaurantId, updateMenuItem }

@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
 import Modal from '../components/Modal/Modal'
 import Navbar from '../components/Navbar/Navbar'
 import { getMeals } from '../services/meals'
-import { addMenuItems, getMenuByRestaurantId } from '../services/menus'
+import {
+  addMenuItems,
+  getMenuByRestaurantId,
+} from '../services/menus'
 
 function Dashboard({
   variant = 'client',
@@ -19,6 +22,7 @@ function Dashboard({
 }) {
   const isClient = variant === 'client'
   const restaurantId = user?._id ?? null
+  const navigate = useNavigate()
   const title = isClient
     ? t('dashboard.clientTitle')
     : t('dashboard.restaurantTitle')
@@ -37,7 +41,6 @@ function Dashboard({
   const [isMealsLoading, setIsMealsLoading] = useState(false)
   const [selectedMeals, setSelectedMeals] = useState([])
   const [isSavingMeals, setIsSavingMeals] = useState(false)
-  const [activeMenuItem, setActiveMenuItem] = useState(null)
 
   useEffect(() => {
     if (isClient) return undefined
@@ -102,6 +105,7 @@ function Dashboard({
     }
   }, [isAddModalOpen, t, token])
 
+
   const menuItems = useMemo(() => {
     const items = menu?.items ?? []
     return items.map((item, index) => {
@@ -122,6 +126,7 @@ function Dashboard({
         item?.photoUrl ?? item?.photo?.url ?? item?.imageUrl ?? item?.image ?? null
       return {
         id: item?._id ?? item?.mealId ?? `${origin}-${index}`,
+        mealId: item?.mealId ?? item?.meal?._id ?? item?.idMeal ?? null,
         name,
         type,
         price,
@@ -149,6 +154,7 @@ function Dashboard({
     })
     return ids
   }, [menu])
+
 
   const toggleMealSelection = (mealId) => {
     setSelectedMeals((prev) => {
@@ -207,8 +213,20 @@ function Dashboard({
   const isSelectionValid =
     selectedMeals.length > 0 &&
     selectedMeals.every(
-      (item) => item.price !== '' && item.price !== null && item.price !== undefined
+      (item) =>
+        item.price !== '' &&
+        item.price !== null &&
+        item.price !== undefined &&
+        item.photo
     )
+  const hasMissingPrice =
+    selectedMeals.length > 0 &&
+    selectedMeals.some(
+      (item) =>
+        item.price === '' || item.price === null || item.price === undefined
+    )
+  const hasMissingPhoto =
+    selectedMeals.length > 0 && selectedMeals.some((item) => !item.photo)
 
   const handleSaveMeals = async () => {
     if (isSavingMeals || !isSelectionValid) return
@@ -230,6 +248,7 @@ function Dashboard({
       setIsSavingMeals(false)
     }
   }
+
 
   const formatPrice = (value) => {
     if (value === null || value === undefined || value === '') return '—'
@@ -255,7 +274,6 @@ function Dashboard({
     type === 'catalog'
       ? t('dashboard.menuTypeCatalog')
       : t('dashboard.menuTypeCustom')
-
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -327,7 +345,11 @@ function Dashboard({
                         <tr
                           key={item.id}
                           className="menuRow"
-                          onClick={() => setActiveMenuItem(item)}
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/restaurant/menu/${item.mealId ?? item.id}`
+                            )
+                          }
                         >
                           <td>
                             <div className="menuThumb">
@@ -339,7 +361,7 @@ function Dashboard({
                             </div>
                           </td>
                           <td>{item.name}</td>
-                          <td>{getTypeLabel(item.type)}</td>
+                          <td>{item.category ?? '—'}</td>
                           <td>{formatPrice(item.price)}</td>
                           <td>{getOriginLabel(item.origin)}</td>
                         </tr>
@@ -443,6 +465,7 @@ function Dashboard({
                             className="photoDrop__input"
                             type="file"
                             accept="image/*"
+                            required
                             onChange={(event) =>
                               updateMealSelection(mealId, {
                                 photo: event.target.files?.[0] ?? null,
@@ -470,58 +493,14 @@ function Dashboard({
           </div>
         )}
         {!isSelectionValid && selectedMeals.length > 0 && (
-          <p className="menuError">{t('dashboard.menuAddMissingPrice')}</p>
-        )}
-      </Modal>
-      <Modal
-        isOpen={!isClient && Boolean(activeMenuItem)}
-        title={activeMenuItem?.name}
-        cancelLabel={t('dashboard.menuDetailClose')}
-        onCancel={() => setActiveMenuItem(null)}
-      >
-        {activeMenuItem && (
-          <div className="menuDetail">
-            <div className="menuDetail__image">
-              {activeMenuItem.imageUrl ? (
-                <img
-                  src={activeMenuItem.imageUrl}
-                  alt={activeMenuItem.name}
-                />
-              ) : (
-                <div className="menuThumb menuThumb--large">
-                  <span>{t('dashboard.menuNoImage')}</span>
-                </div>
-              )}
-            </div>
-            <div className="menuDetail__grid">
-              <div>
-                <span className="menuDetail__label">
-                  {t('dashboard.menuDetailPrice')}
-                </span>
-                <span>{formatPrice(activeMenuItem.price)}</span>
-              </div>
-              <div>
-                <span className="menuDetail__label">
-                  {t('dashboard.menuDetailType')}
-                </span>
-                <span>{getTypeLabel(activeMenuItem.type)}</span>
-              </div>
-              <div>
-                <span className="menuDetail__label">
-                  {t('dashboard.menuDetailOrigin')}
-                </span>
-                <span>{getOriginLabel(activeMenuItem.origin)}</span>
-              </div>
-              {activeMenuItem.category && (
-                <div>
-                  <span className="menuDetail__label">
-                    {t('dashboard.menuDetailCategory')}
-                  </span>
-                  <span>{activeMenuItem.category}</span>
-                </div>
-              )}
-            </div>
-          </div>
+          <>
+            {hasMissingPrice && (
+              <p className="menuError">{t('dashboard.menuAddMissingPrice')}</p>
+            )}
+            {hasMissingPhoto && (
+              <p className="menuError">{t('dashboard.menuAddMissingPhoto')}</p>
+            )}
+          </>
         )}
       </Modal>
     </div>

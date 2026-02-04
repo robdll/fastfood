@@ -9,6 +9,7 @@ import { getMeals } from '../controllers/mealsController.js'
 import {
   addMenuItems,
   getMenuByRestaurantId,
+  updateMenuItem,
 } from '../controllers/menusController.js'
 import {
   createUser,
@@ -31,6 +32,12 @@ router.patch(
   requireAuth,
   upload.any(),
   addMenuItems
+)
+router.patch(
+  '/api/menus/:restaurantId/items/:mealId',
+  requireAuth,
+  upload.any(),
+  updateMenuItem
 )
 router.post('/api/users', createUser)
 router.put('/api/users/:id', requireAuth, requireSelf, updateUser)

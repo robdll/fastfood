@@ -304,9 +304,60 @@
   gap: 14px;
 }
 
+.menuDetail__layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.menuDetail__panel {
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: var(--paper);
+  height: 100%;
+}
+
+.menuDetail__imagePicker {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  cursor: pointer;
+  background: var(--paper);
+  text-align: center;
+}
+
+.menuDetail__imageInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.menuDetail__imageHint {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.menuDetail__imagePicker img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--ink);
+}
+
 .menuDetail__image img {
   width: 100%;
-  max-height: 220px;
+  max-height: 180px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   border: 2px solid var(--ink);
@@ -325,8 +376,55 @@
   opacity: 0.75;
 }
 
+.menuDetail__title {
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+.menuDetail__edit {
+  display: grid;
+  gap: 12px;
+}
+
+.menuDetail__editGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.menuDetail__formGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.menuDetail__actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.menuDetail__actions--inline {
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
 @media (max-width: 860px) {
   .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .menuDetail__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .menuDetail__formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .menuDetail__editGrid {
     grid-template-columns: 1fr;
   }
 }

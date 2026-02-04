@@ -70,6 +70,7 @@ const buildExistingMealIdSet = (items = []) => {
   const ids = new Set()
   items.forEach((item) => {
     const candidates = [
+      item?._id,
       item?.mealId,
       item?.meal?._id,
       item?.meal?.idMeal,
@@ -81,6 +82,23 @@ const buildExistingMealIdSet = (items = []) => {
       .forEach((value) => ids.add(value))
   })
   return ids
+}
+
+const findMenuItemIndex = (items = [], targetId) => {
+  const normalized = targetId?.toString().trim()
+  if (!normalized) return -1
+  return items.findIndex((item) => {
+    const candidates = [
+      item?._id,
+      item?.mealId,
+      item?.meal?._id,
+      item?.meal?.idMeal,
+      item?.idMeal,
+    ]
+    return candidates
+      .filter(Boolean)
+      .some((value) => value.toString() === normalized)
+  })
 }
 
 const addMenuItems = async (req, res) => {
@@ -130,6 +148,12 @@ const addMenuItems = async (req, res) => {
 
     if (pendingIds.length === 0) {
       res.json(menu)
+      return
+    }
+
+    const missingPhotos = pendingIds.filter((id) => !photoByMealId.has(id))
+    if (missingPhotos.length > 0) {
+      res.status(400).json({ error: 'Photo is required for each menu item.' })
       return
     }
 
@@ -222,4 +246,94 @@ const addMenuItems = async (req, res) => {
   }
 }
 
-export { addMenuItems, getMenuByRestaurantId }
+const updateMenuItem = async (req, res) => {
+  const { restaurantId, mealId } = req.params
+
+  if (!restaurantId || !mealId) {
+    res.status(400).json({ error: 'Restaurant id and meal id are required.' })
+    return
+  }
+
+  if (req.auth?.userId && req.auth.userId !== restaurantId) {
+    res.status(403).json({ error: 'Forbidden.' })
+    return
+  }
+
+  const body = req.body ?? {}
+  const hasPriceField = Object.prototype.hasOwnProperty.call(body, 'price')
+  const normalizedPrice = hasPriceField ? normalizePrice(body.price) : null
+  const hasCategoryField = Object.prototype.hasOwnProperty.call(body, 'category')
+  const normalizedCategory = hasCategoryField
+    ? body.category?.toString().trim()
+    : null
+  if (hasPriceField && normalizedPrice === null) {
+    res.status(400).json({ error: 'Price is required to update the dish.' })
+    return
+  }
+  if (hasCategoryField && !normalizedCategory) {
+    res.status(400).json({ error: 'Category is required to update the dish.' })
+    return
+  }
+
+  const files = Array.isArray(req.files) ? req.files : []
+  const photoFile = files.find((file) => file.fieldname === 'photo')
+
+  if (!hasPriceField && !photoFile && !hasCategoryField) {
+    res.status(400).json({ error: 'At least one update is required.' })
+    return
+  }
+
+  const { client, db } = await connectToDatabase()
+
+  try {
+    const menu = await ensureMenuForRestaurant(db, restaurantId)
+    const items = menu.items ?? []
+    const targetIndex = findMenuItemIndex(items, mealId)
+    if (targetIndex < 0) {
+      res.status(404).json({ error: 'Menu item not found.' })
+      return
+    }
+
+    const updatedItem = { ...items[targetIndex] }
+
+    if (hasPriceField) {
+      updatedItem.price = normalizedPrice
+    }
+
+    if (hasCategoryField) {
+      updatedItem.category = normalizedCategory
+    }
+
+    if (photoFile) {
+      const uploadResult = await uploadImage(photoFile, {
+        folder: 'fastfood/menu',
+      })
+      updatedItem.photoUrl = uploadResult?.secure_url ?? null
+      updatedItem.photoPublicId = uploadResult?.public_id ?? null
+    }
+
+    const updatedAt = new Date()
+    const updatedItems = [...items]
+    updatedItems[targetIndex] = updatedItem
+
+    await db.collection(COLLECTION_NAME).updateOne(
+      { _id: menu._id },
+      {
+        $set: {
+          items: updatedItems,
+          updatedAt,
+        },
+      }
+    )
+
+    res.json({
+      ...menu,
+      items: updatedItems,
+      updatedAt,
+    })
+  } finally {
+    await client.close()
+  }
+}
+
+export { addMenuItems, getMenuByRestaurantId, updateMenuItem }
