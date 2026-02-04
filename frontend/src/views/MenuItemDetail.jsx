@@ -141,17 +141,40 @@ function MenuItemDetail({
   }, [menuItem])
   const showEmptyCategory = !menuItem?.category
 
+  const matchedMeal = useMemo(() => {
+    if (!menuItem) return null
+    return (
+      catalogMeals.find((meal) => {
+        const id = meal?._id?.toString() ?? meal?.idMeal?.toString()
+        return id && (id === menuItem.mealId || id === menuItem.id)
+      }) ?? null
+    )
+  }, [catalogMeals, menuItem])
+
   const ingredients = useMemo(() => {
     if (!menuItem) return []
     if (Array.isArray(menuItem.ingredients) && menuItem.ingredients.length > 0) {
       return getMealIngredients(menuItem)
     }
-    const matched = catalogMeals.find((meal) => {
-      const id = meal?._id?.toString() ?? meal?.idMeal?.toString()
-      return id && (id === menuItem.mealId || id === menuItem.id)
-    })
-    return getMealIngredients(matched)
-  }, [catalogMeals, menuItem])
+    return getMealIngredients(matchedMeal)
+  }, [matchedMeal, menuItem])
+
+  const youtubeUrl = useMemo(() => {
+    const value =
+      menuItem?.raw?.strYoutube ??
+      menuItem?.raw?.youtube ??
+      menuItem?.strYoutube ??
+      matchedMeal?.strYoutube ??
+      matchedMeal?.youtube ??
+      null
+    return value?.toString().trim() || ''
+  }, [matchedMeal, menuItem])
+
+  const sourceUrl = useMemo(() => {
+    const value =
+      menuItem?.raw?.strSource ?? menuItem?.strSource ?? matchedMeal?.strSource ?? null
+    return value?.toString().trim() || ''
+  }, [matchedMeal, menuItem])
 
   const normalizedRemovedIngredients = useMemo(
     () =>
@@ -335,6 +358,8 @@ function MenuItemDetail({
                   onRemovedIngredientsChange={setRemovedIngredients}
                   ingredientsLabel={t('dashboard.menuDetailIngredients')}
                   ingredientsHint={t('dashboard.menuDetailIngredientsHint')}
+                  youtubeUrl={youtubeUrl}
+                  sourceUrl={sourceUrl}
                   originLabel={t('dashboard.menuDetailOrigin')}
                   originValue={getOriginLabel(menuItem.origin)}
                   showOrigin

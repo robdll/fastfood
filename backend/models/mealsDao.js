@@ -6,6 +6,8 @@ const buildMealProjection = () => {
     idMeal: 1,
     strCategory: 1,
     strMealThumb: 1,
+    strYoutube: 1,
+    strSource: 1,
     ingredients: 1,
     measures: 1,
   }
