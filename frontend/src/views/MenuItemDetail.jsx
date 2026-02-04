@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs/Breadcrumbs'
-import MenuItemForm from '../components/MenuItemForm/MenuItemForm'
+import MenuItemDetailCard from '../components/MenuItemDetailCard/MenuItemDetailCard'
 import Navbar from '../components/Navbar/Navbar'
 import mealCategories from '../constants/mealCategories'
 import useToast from '../hooks/useToast'
@@ -317,66 +317,43 @@ function MenuItemDetail({
       />
       <main>
         <div className="page">
-          <section className="card menuCard">
-            <div className="menuHeader">
-              <div>
-                <h2>{t('dashboard.menuDetailTitle')}</h2>
-                <p className="muted">{t('dashboard.menuDetailBody')}</p>
-              </div>
-              <div className="menuActions">
-                <button
-                  className="btn btn--secondary"
-                  type="button"
-                  onClick={() => navigate('/dashboard/restaurant')}
-                >
-                  {t('dashboard.menuDetailBack')}
-                </button>
-              </div>
-            </div>
-            {isMenuLoading && (
-              <p className="muted">{t('dashboard.menuLoading')}</p>
-            )}
-            {menuError && <p className="menuError">{menuError}</p>}
-            {!isMenuLoading && !menuError && !menuItem && (
-              <p className="menuError">{t('dashboard.menuDetailNotFound')}</p>
-            )}
-            {menuItem && (
-              <>
-                <MenuItemForm
-                  t={t}
-                  imageUrl={menuItem.imageUrl}
-                  photoPreview={editPhotoPreview}
-                  onPhotoChange={setEditPhotoFile}
-                  photoHint={t('dashboard.menuDetailUpdatePhotoHint')}
-                  price={editPrice}
-                  onPriceChange={setEditPrice}
-                  category={editCategory}
-                  onCategoryChange={setEditCategory}
-                  categories={categoryOptions}
-                  ingredients={ingredients}
-                  removedIngredients={removedIngredients}
-                  onRemovedIngredientsChange={setRemovedIngredients}
-                  ingredientsLabel={t('dashboard.menuDetailIngredients')}
-                  ingredientsHint={t('dashboard.menuDetailIngredientsHint')}
-                  youtubeUrl={youtubeUrl}
-                  sourceUrl={sourceUrl}
-                  originLabel={t('dashboard.menuDetailOrigin')}
-                  originValue={getOriginLabel(menuItem.origin)}
-                  showOrigin
-                  isSubmitting={isUpdatingItem}
-                  submitLabel={
-                    isUpdatingItem
-                      ? t('dashboard.menuDetailUpdateSaving')
-                      : t('dashboard.menuDetailUpdateAction')
-                  }
-                  disableSubmit={!canUpdateItem}
-                  onSubmit={handleUpdateMenuItem}
-                  showEmptyCategory={showEmptyCategory}
-                />
-                {updateError && <p className="menuError">{updateError}</p>}
-              </>
-            )}
-          </section>
+          <MenuItemDetailCard
+            t={t}
+            onBack={() => navigate('/dashboard/restaurant')}
+            isLoading={isMenuLoading}
+            menuError={menuError}
+            menuItem={menuItem}
+            updateError={updateError}
+            formProps={{
+              t,
+              imageUrl: menuItem?.imageUrl,
+              photoPreview: editPhotoPreview,
+              onPhotoChange: setEditPhotoFile,
+              photoHint: t('dashboard.menuDetailUpdatePhotoHint'),
+              price: editPrice,
+              onPriceChange: setEditPrice,
+              category: editCategory,
+              onCategoryChange: setEditCategory,
+              categories: categoryOptions,
+              ingredients,
+              removedIngredients,
+              onRemovedIngredientsChange: setRemovedIngredients,
+              ingredientsLabel: t('dashboard.menuDetailIngredients'),
+              ingredientsHint: t('dashboard.menuDetailIngredientsHint'),
+              youtubeUrl,
+              sourceUrl,
+              originLabel: t('dashboard.menuDetailOrigin'),
+              originValue: menuItem ? getOriginLabel(menuItem.origin) : '',
+              showOrigin: true,
+              isSubmitting: isUpdatingItem,
+              submitLabel: isUpdatingItem
+                ? t('dashboard.menuDetailUpdateSaving')
+                : t('dashboard.menuDetailUpdateAction'),
+              disableSubmit: !canUpdateItem,
+              onSubmit: handleUpdateMenuItem,
+              showEmptyCategory,
+            }}
+          />
         </div>
       </main>
     </div>
