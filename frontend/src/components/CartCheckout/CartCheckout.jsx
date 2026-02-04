@@ -1,3 +1,4 @@
+import AddressPicker from '../AddressPicker/AddressPicker'
 import './CartCheckout.css'
 
 const PAYMENT_OPTIONS = ['delivery', 'cards', 'coupons']
@@ -7,7 +8,10 @@ function CartCheckout({
   onPaymentMethodChange,
   deliveryOption,
   onDeliveryOptionChange,
+  deliveryAddress,
+  onDeliveryAddressChange,
   isDisabled,
+  lang,
   t,
 }) {
   return (
@@ -55,6 +59,25 @@ function CartCheckout({
           </div>
         </div>
       </div>
+      {deliveryOption === 'delivery' && (
+        <div className="cartForm__field cartForm__field--full">
+          <label htmlFor="deliveryAddress">
+            {t('clientCart.deliveryAddress')}
+          </label>
+          <AddressPicker
+            inputId="deliveryAddress"
+            value={deliveryAddress}
+            onChange={onDeliveryAddressChange}
+            t={t}
+            lang={lang}
+          />
+          {!deliveryAddress?.trim() && (
+            <span className="tiny errorText" role="status">
+              {t('clientCart.deliveryAddressRequired')}
+            </span>
+          )}
+        </div>
+      )}
       <button className="btn btn--primary" type="button" disabled={isDisabled}>
         {t('clientCart.checkoutAction')}
       </button>

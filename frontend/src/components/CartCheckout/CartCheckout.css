@@ -22,6 +22,10 @@
   font-family: var(--font-sans);
 }
 
+.cartForm__field--full {
+  grid-column: 1 / -1;
+}
+
 .cartForm__options {
   display: grid;
   gap: 8px;

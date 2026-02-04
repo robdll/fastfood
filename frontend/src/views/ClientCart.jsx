@@ -27,7 +27,8 @@ function ClientCart({
       ? preferred
       : 'delivery'
   })
-  const [deliveryOption, setDeliveryOption] = useState('delivery')
+  const [deliveryOption, setDeliveryOption] = useState('pickup')
+  const [deliveryAddress, setDeliveryAddress] = useState('')
   const [pendingRemoval, setPendingRemoval] = useState(null)
 
   const handleIncrease = (item) => {
@@ -84,6 +85,10 @@ function ClientCart({
     return value.toString()
   }
 
+  const isCheckoutDisabled =
+    items.length === 0 ||
+    (deliveryOption === 'delivery' && !deliveryAddress.trim())
+
   return (
     <div className="landing dashboard">
       <Navbar t={t} lang={lang} onLangChange={onLangChange} />
@@ -116,7 +121,10 @@ function ClientCart({
             onPaymentMethodChange={setPaymentMethod}
             deliveryOption={deliveryOption}
             onDeliveryOptionChange={setDeliveryOption}
-            isDisabled={items.length === 0}
+            deliveryAddress={deliveryAddress}
+            onDeliveryAddressChange={setDeliveryAddress}
+            isDisabled={isCheckoutDisabled}
+            lang={lang}
             t={t}
           />
         </div>
