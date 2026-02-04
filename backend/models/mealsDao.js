@@ -10,6 +10,7 @@ const buildMealProjection = () => {
     strSource: 1,
     ingredients: 1,
     measures: 1,
+    origin: 1,
   }
   for (let index = 1; index <= 20; index += 1) {
     projection[`strIngredient${index}`] = 1

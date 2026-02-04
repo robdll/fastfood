@@ -138,6 +138,7 @@ function MenuAddItem({
     [selectedMeal]
   )
 
+
   useEffect(() => {
     if (!selectedMeal) {
       setEditPrice('')
@@ -167,6 +168,7 @@ function MenuAddItem({
     }
   }, [editPhotoPreview])
 
+
   const setEditPhotoFile = (file) => {
     setEditPhoto(file ?? null)
     setEditPhotoPreview((prev) => {
@@ -175,12 +177,14 @@ function MenuAddItem({
     })
   }
 
+
   const hasDefaultPhoto = Boolean(selectedMeal?.strMealThumb)
   const isSelectionValid =
     selectedMeal &&
     editPrice !== '' &&
     editPrice !== null &&
     (editPhoto || hasDefaultPhoto)
+
 
   const handleSaveMeal = async () => {
     if (!selectedMeal || !isSelectionValid || isSavingMeal) return
@@ -212,6 +216,7 @@ function MenuAddItem({
       setIsSavingMeal(false)
     }
   }
+
 
   const tableMeals = useMemo(() => {
     return meals
@@ -276,11 +281,11 @@ function MenuAddItem({
               </div>
               <div className="menuActions">
                 <button
-                  className="btn btn--secondary"
+                  className="btn btn--sky"
                   type="button"
-                  onClick={() => navigate('/dashboard/restaurant')}
+                  onClick={() => navigate('/dashboard/restaurant/menu/add/create')}
                 >
-                  {t('dashboard.menuDetailBack')}
+                  {t('dashboard.menuCreateAction')}
                 </button>
               </div>
             </div>

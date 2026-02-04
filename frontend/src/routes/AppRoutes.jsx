@@ -3,6 +3,7 @@ import AuthPage from '../views/AuthPage'
 import Dashboard from '../views/Dashboard'
 import Landing from '../views/Landing'
 import MenuAddItem from '../views/MenuAddItem'
+import MenuCreateItem from '../views/MenuCreateItem'
 import MenuItemDetail from '../views/MenuItemDetail'
 import Settings from '../views/Settings'
 
@@ -148,6 +149,26 @@ function AppRoutes({
         element={
           <RequireAuth isAuthed={isAuthed}>
             <MenuAddItem
+              user={user}
+              token={token}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/client"
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/restaurant/menu/add/create"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <MenuCreateItem
               user={user}
               token={token}
               lang={lang}

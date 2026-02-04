@@ -22,7 +22,64 @@ const getMenuByRestaurantId = async (req, res) => {
 
   try {
     const menu = await ensureMenuForRestaurant(db, restaurantId)
-    res.json(menu)
+    const items = menu?.items ?? []
+    const mealIds = items
+      .map((item) => {
+        const candidate =
+          item?.mealId ??
+          item?.meal?._id ??
+          item?.meal?.idMeal ??
+          item?.idMeal ??
+          null
+        return candidate?.toString()
+      })
+      .filter(Boolean)
+
+    if (mealIds.length === 0) {
+      res.json(menu)
+      return
+    }
+
+    const objectIds = mealIds
+      .filter((id) => ObjectId.isValid(id))
+      .map((id) => new ObjectId(id))
+    const meals = await db
+      .collection('meals')
+      .find({
+        $or: [
+          ...(objectIds.length > 0 ? [{ _id: { $in: objectIds } }] : []),
+          { idMeal: { $in: mealIds } },
+        ],
+      })
+      .project({ _id: 1, idMeal: 1, origin: 1 })
+      .toArray()
+
+    const mealOriginById = new Map()
+    meals.forEach((meal) => {
+      if (meal?._id) {
+        mealOriginById.set(meal._id.toString(), meal.origin)
+      }
+      if (meal?.idMeal) {
+        mealOriginById.set(meal.idMeal.toString(), meal.origin)
+      }
+    })
+
+    const enrichedItems = items.map((item) => {
+      if (item?.origin && item.origin !== 'catalog') return item
+      const lookupId =
+        item?.mealId ??
+        item?.meal?._id ??
+        item?.meal?.idMeal ??
+        item?.idMeal ??
+        null
+      const origin = lookupId
+        ? mealOriginById.get(lookupId.toString())
+        : null
+      if (!origin) return item
+      return { ...item, origin }
+    })
+
+    res.json({ ...menu, items: enrichedItems })
   } finally {
     await client.close()
   }
@@ -188,7 +245,13 @@ const addMenuItems = async (req, res) => {
     const meals = await db
       .collection('meals')
       .find(query)
-      .project({ strMeal: 1, idMeal: 1, strCategory: 1, strMealThumb: 1 })
+      .project({
+        strMeal: 1,
+        idMeal: 1,
+        strCategory: 1,
+        strMealThumb: 1,
+        origin: 1,
+      })
       .toArray()
 
     const mealById = new Map()
@@ -232,11 +295,12 @@ const addMenuItems = async (req, res) => {
         return
       }
 
+      const normalizedOrigin = meal?.origin?.toString().trim()
       itemsToAdd.push({
         mealId: meal._id?.toString() ?? meal.idMeal?.toString(),
         name: meal.strMeal ?? 'Meal',
         category: normalizedCategory || meal.strCategory || null,
-        origin: 'catalog',
+        origin: normalizedOrigin || 'catalog',
         price: normalizedPrice,
         photoUrl,
         photoPublicId,

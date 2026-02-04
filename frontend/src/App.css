@@ -52,6 +52,11 @@
   color: var(--ink);
 }
 
+.btn--sky {
+  background: var(--primary-sky);
+  color: var(--ink);
+}
+
 .btn--danger {
   background: var(--primary-red);
   color: var(--paper);
@@ -144,6 +149,7 @@
 .menuError {
   color: var(--primary-red);
   font-weight: 700;
+  margin: 0;
 }
 
 
@@ -157,6 +163,27 @@
   padding: 16px 12px;
   border-bottom: none;
   background: rgba(239, 200, 86, 0.08);
+}
+
+.menuCreate {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+}
+
+.menuCreate__title,
+.menuCreate__subtitle {
+  margin: 0;
+}
+
+.menuCreate__picker {
+  align-items: end;
+}
+
+.menuCreate__errors {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 .menuTable__colImage {

@@ -79,6 +79,8 @@ function Dashboard({
     return items.map((item, index) => {
       const origin =
         item?.origin ??
+        item?.meal?.origin ??
+        item?.mealOrigin ??
         item?.source ??
         (item?.mealId || item?.meal ? 'catalog' : 'custom')
       const name =

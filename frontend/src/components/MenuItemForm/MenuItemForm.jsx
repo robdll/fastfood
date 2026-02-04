@@ -3,6 +3,9 @@ import './MenuItemForm.css'
 
 function MenuItemForm({
   t,
+  nameLabel,
+  name,
+  onNameChange,
   imageUrl,
   photoPreview,
   onPhotoChange,
@@ -13,6 +16,12 @@ function MenuItemForm({
   onCategoryChange,
   categories = [],
   ingredients = [],
+  ingredientMode = 'remove',
+  ingredientOptions = [],
+  selectedIngredients = [],
+  onSelectedIngredientsChange,
+  ingredientSelectLabel,
+  ingredientPickerClassName,
   removedIngredients = [],
   onRemovedIngredientsChange,
   ingredientsLabel,
@@ -37,6 +46,16 @@ function MenuItemForm({
   const handleIngredientToggle = (name) => {
     const normalized = name?.toString().trim()
     if (!normalized) return
+    if (ingredientMode === 'select') {
+      const next = new Set(selectedIngredients ?? [])
+      if (next.has(normalized)) {
+        next.delete(normalized)
+      } else {
+        next.add(normalized)
+      }
+      onSelectedIngredientsChange?.(Array.from(next))
+      return
+    }
     const next = new Set(removedIngredients ?? [])
     if (next.has(normalized)) {
       next.delete(normalized)
@@ -46,6 +65,19 @@ function MenuItemForm({
     onRemovedIngredientsChange?.(Array.from(next))
   }
 
+  const ingredientItems =
+    ingredientMode === 'select'
+      ? (selectedIngredients ?? []).map((ingredient) => ({
+          name: ingredient,
+          measure: '',
+        }))
+      : ingredients
+
+  const showIngredientsSection =
+    ingredientMode === 'select'
+      ? ingredientOptions.length > 0 || ingredientItems.length > 0
+      : ingredientItems.length > 0
+
   return (
     <div className="menuDetail">
       <div className="menuDetail__layout">
@@ -53,6 +85,17 @@ function MenuItemForm({
           <div className="menuDetail__content">
             <div className="menuDetail__left">
               <div className="menuDetail__formGrid">
+                {nameLabel && (
+                  <label className="mealField">
+                    <span>{nameLabel}</span>
+                    <input
+                      className="input"
+                      type="text"
+                      value={name ?? ''}
+                      onChange={(event) => onNameChange?.(event.target.value)}
+                    />
+                  </label>
+                )}
                 <label className="mealField">
                   <span>{t('dashboard.menuDetailPrice')}</span>
                   <input
@@ -141,7 +184,7 @@ function MenuItemForm({
                 </div>
               )}
             </div>
-            {ingredients.length > 0 && (
+            {showIngredientsSection && (
               <div className="menuDetail__ingredients">
                 <span className="menuDetail__label menuDetail__title">
                   {ingredientsLabel}
@@ -151,17 +194,44 @@ function MenuItemForm({
                     {ingredientsHint}
                   </p>
                 )}
-                <div className="menuDetail__ingredientsList">
-                  {ingredients.map((ingredient) => {
-                    const isRemoved = removedIngredients.includes(ingredient.name)
-                    return (
-                      <label
-                        key={ingredient.name}
-                        className="ingredientItem"
+                {ingredientMode === 'select' && ingredientOptions.length > 0 && (
+                  <div
+                    className={`menuDetail__formGrid ${
+                      ingredientPickerClassName ?? ''
+                    }`}
+                  >
+                    <label className="mealField">
+                      <span>{ingredientSelectLabel}</span>
+                      <select
+                        className="input"
+                        value=""
+                        onChange={(event) => {
+                          const value = event.target.value
+                          if (!value) return
+                          handleIngredientToggle(value)
+                        }}
                       >
+                        <option value="">{'—'}</option>
+                        {ingredientOptions.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+                )}
+                <div className="menuDetail__ingredientsList">
+                  {ingredientItems.map((ingredient) => {
+                    const isChecked =
+                      ingredientMode === 'select'
+                        ? true
+                        : !removedIngredients.includes(ingredient.name)
+                    return (
+                      <label key={ingredient.name} className="ingredientItem">
                         <input
                           type="checkbox"
-                          checked={!isRemoved}
+                          checked={isChecked}
                           onChange={() => handleIngredientToggle(ingredient.name)}
                         />
                         <span className="ingredientItem__name">
