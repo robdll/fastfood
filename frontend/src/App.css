@@ -117,17 +117,6 @@
   opacity: 0.85;
 }
 
-
-.footer {
-  margin-top: 18px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding-top: 12px;
-}
-
 @media (max-width: 860px) {
   .grid {
     grid-template-columns: 1fr;
