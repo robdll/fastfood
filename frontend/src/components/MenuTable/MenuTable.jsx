@@ -10,17 +10,23 @@ function MenuTable({
   t,
 }) {
   return (
-    <div className="menuTableWrapper">
+    <div
+      className={`menuTableWrapper${
+        isLoading ? ' menuTableWrapper--loading' : ''
+      }`}
+    >
       <table className="menuTable">
-        <thead>
-          <tr>
-            <th>{t('dashboard.menuTableImage')}</th>
-            <th>{t('dashboard.menuTableName')}</th>
-            <th>{t('dashboard.menuTableType')}</th>
-            <th>{t('dashboard.menuTablePrice')}</th>
-            <th>{t('dashboard.menuTableOrigin')}</th>
-          </tr>
-        </thead>
+        {!isLoading && (
+          <thead>
+            <tr>
+              <th>{t('dashboard.menuTableImage')}</th>
+              <th>{t('dashboard.menuTableName')}</th>
+              <th>{t('dashboard.menuTableType')}</th>
+              <th>{t('dashboard.menuTablePrice')}</th>
+              <th>{t('dashboard.menuTableOrigin')}</th>
+            </tr>
+          </thead>
+        )}
         <tbody>
           {!isLoading && items.length === 0 ? (
             <tr>
