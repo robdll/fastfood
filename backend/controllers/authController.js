@@ -1,11 +1,8 @@
 import jwt from 'jsonwebtoken'
 
 import { connectToDatabase } from '../db/db.js'
+import { findActiveUserByEmail } from '../models/usersDao.js'
 import { isPlainObject } from '../utils/utils.js'
-
-const COLLECTION_NAME = 'users'
-
-const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 const loginUser = async (req, res) => {
   const payload = req.body
@@ -32,10 +29,7 @@ const loginUser = async (req, res) => {
   const { client, db } = await connectToDatabase()
 
   try {
-    const user = await db.collection(COLLECTION_NAME).findOne({
-      email: { $regex: `^${escapeRegex(email)}$`, $options: 'i' },
-      active: { $ne: false },
-    })
+    const user = await findActiveUserByEmail(db, email)
 
     if (!user || user.password !== password) {
       res.status(401).json({ error: 'Invalid credentials.' })

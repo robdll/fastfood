@@ -1,11 +1,12 @@
-import { ObjectId } from 'mongodb'
-
 import { connectToDatabase } from '../db/db.js'
+import {
+  deleteUserById,
+  findUserById,
+  insertUser,
+  isValidUserId,
+  updateUserById,
+} from '../models/usersDao.js'
 import { getFormValues, isPlainObject } from '../utils/utils.js'
-
-const COLLECTION_NAME = 'users'
-
-const isValidObjectId = (id) => ObjectId.isValid(id)
 
 const normalizeStringArray = (value) => {
   if (Array.isArray(value)) {
@@ -33,7 +34,7 @@ const getUserById = async (req, res) => {
     return
   }
 
-  if (!isValidObjectId(id)) {
+  if (!isValidUserId(id)) {
     res.status(400).json({ error: 'Invalid user id.' })
     return
   }
@@ -41,9 +42,7 @@ const getUserById = async (req, res) => {
   const { client, db } = await connectToDatabase()
 
   try {
-    const user = await db
-      .collection(COLLECTION_NAME)
-      .findOne({ _id: new ObjectId(id) })
+    const user = await findUserById(db, id)
 
     if (!user) {
       res.status(404).json({ error: 'User not found.' })
@@ -84,8 +83,8 @@ const createUser = async (req, res) => {
       updatedAt: new Date(),
     }
 
-    const result = await db.collection(COLLECTION_NAME).insertOne(user)
-    res.status(201).json({ _id: result.insertedId, ...user })
+    const created = await insertUser(db, user)
+    res.status(201).json(created)
   } finally {
     await client.close()
   }
@@ -100,7 +99,7 @@ const updateUser = async (req, res) => {
     return
   }
 
-  if (!isValidObjectId(id)) {
+  if (!isValidUserId(id)) {
     res.status(400).json({ error: 'Invalid user id.' })
     return
   }
@@ -133,18 +132,14 @@ const updateUser = async (req, res) => {
       updateDoc.restaurantData = normalizeRestaurantData(updates.restaurantData)
     }
 
-    const result = await db
-      .collection(COLLECTION_NAME)
-      .updateOne({ _id: new ObjectId(id) }, { $set: updateDoc })
+    const result = await updateUserById(db, id, updateDoc)
 
     if (result.matchedCount === 0) {
       res.status(404).json({ error: 'User not found.' })
       return
     }
 
-    const user = await db
-      .collection(COLLECTION_NAME)
-      .findOne({ _id: new ObjectId(id) })
+    const user = await findUserById(db, id)
 
     res.json(user)
   } finally {
@@ -160,7 +155,7 @@ const deleteUser = async (req, res) => {
     return
   }
 
-  if (!isValidObjectId(id)) {
+  if (!isValidUserId(id)) {
     res.status(400).json({ error: 'Invalid user id.' })
     return
   }
@@ -168,9 +163,7 @@ const deleteUser = async (req, res) => {
   const { client, db } = await connectToDatabase()
 
   try {
-    const result = await db
-      .collection(COLLECTION_NAME)
-      .deleteOne({ _id: new ObjectId(id) })
+    const result = await deleteUserById(db, id)
 
     if (result.deletedCount === 0) {
       res.status(404).json({ error: 'User not found.' })

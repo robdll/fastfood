@@ -1,17 +1,11 @@
 import { connectToDatabase } from '../db/db.js'
-
-const COLLECTION_NAME = 'meals'
+import { listMeals } from '../models/mealsDao.js'
 
 const getMeals = async (req, res) => {
   const { client, db } = await connectToDatabase()
 
   try {
-    const meals = await db
-      .collection(COLLECTION_NAME)
-      .find({})
-      .project({ strMeal: 1, idMeal: 1, strCategory: 1 })
-      .sort({ strMeal: 1 })
-      .toArray()
+    const meals = await listMeals(db)
 
     res.json(meals)
   } finally {
