@@ -12,6 +12,16 @@ const readOrders = () => {
   }
 }
 
+const normalizeOrderId = (value) => {
+  if (value === null || value === undefined) return null
+  if (typeof value === 'string' || typeof value === 'number') {
+    return `${value}`
+  }
+  if (typeof value === 'object' && value.$oid) return value.$oid
+  if (typeof value?.toString === 'function') return value.toString()
+  return null
+}
+
 const writeOrders = (orders) => {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(ORDERS_KEY, JSON.stringify(orders))
@@ -27,6 +37,24 @@ const addOrders = (orders) => {
   return updated
 }
 
+const updateOrderStatus = (orderId, status) => {
+  const targetId = normalizeOrderId(orderId)
+  if (!targetId) return readOrders()
+  const existing = readOrders()
+  const updatedAt = new Date().toISOString()
+  const updated = existing.map((order) => {
+    const currentId = normalizeOrderId(order?._id ?? order?.id)
+    if (!currentId || currentId !== targetId) return order
+    return {
+      ...order,
+      status,
+      updatedAt,
+    }
+  })
+  writeOrders(updated)
+  return updated
+}
+
 const clearOrders = () => writeOrders([])
 
-export { addOrders, clearOrders, getOrders }
+export { addOrders, clearOrders, getOrders, updateOrderStatus }

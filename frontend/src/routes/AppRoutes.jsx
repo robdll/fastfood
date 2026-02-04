@@ -10,6 +10,7 @@ import MenuAddItem from '../views/MenuAddItem'
 import MenuCreateItem from '../views/MenuCreateItem'
 import MenuItemDetail from '../views/MenuItemDetail'
 import RestaurantMenu from '../views/RestaurantMenu'
+import RestaurantOrders from '../views/RestaurantOrders'
 import Settings from '../views/Settings'
 
 function RequireAuth({ isAuthed, children }) {
@@ -215,6 +216,25 @@ function AppRoutes({
             <RestaurantMenu
               user={user}
               token={token}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/client"
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/restaurant/orders"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <RestaurantOrders
+              user={user}
               lang={lang}
               onLangChange={onLangChange}
               onLogout={() => {

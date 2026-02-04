@@ -73,7 +73,7 @@ function Dashboard({
                 title={t('dashboard.ordersTitle')}
                 body={t('dashboard.ordersBody')}
                 actionLabel={t('dashboard.ordersAction')}
-                actionTo="/dashboard/restaurant"
+                actionTo="/dashboard/restaurant/orders"
                 actionVariant="btn--sky"
               />
             </section>
