@@ -1,0 +1,215 @@
+[
+  {
+    "_id": { "$oid": "681c717ea327223432641f01" },
+    "clientId": "681c717ea327223432641c01",
+    "clientName": "Mario Rossi",
+    "restaurantId": "681c717ea327223432641d01",
+    "restaurantName": "Burger Station",
+    "restaurantAddress": "Via Torino 10, Milano",
+    "items": [
+      { "itemId": "52768", "name": "Apple Frangipan Tart", "price": 6.5, "quantity": 1 },
+      { "itemId": "53050", "name": "Ayam Percik", "price": 11.9, "quantity": 1 }
+    ],
+    "subtotal": 18.4,
+    "deliveryFee": 2.5,
+    "total": 20.9,
+    "expectedMinutes": 35,
+    "deliveryOption": "delivery",
+    "deliveryAddress": "Via Dante 25, Milano",
+    "paymentMethod": "cards",
+    "status": "preparation",
+    "createdAt": "2026-02-03T12:00:00.000Z",
+    "updatedAt": "2026-02-03T12:20:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f02" },
+    "clientId": "681c717ea327223432641c01",
+    "clientName": "Mario Rossi",
+    "restaurantId": "681c717ea327223432641d02",
+    "restaurantName": "Pasta Corner",
+    "restaurantAddress": "Via del Corso 58, Roma",
+    "items": [
+      { "itemId": "52893", "name": "Apple & Blackberry Crumble", "price": 5.2, "quantity": 2 }
+    ],
+    "subtotal": 10.4,
+    "deliveryFee": 0,
+    "total": 10.4,
+    "expectedMinutes": null,
+    "deliveryOption": "pickup",
+    "deliveryAddress": "",
+    "paymentMethod": "coupons",
+    "status": "delivered",
+    "createdAt": "2026-02-01T18:10:00.000Z",
+    "updatedAt": "2026-02-01T18:50:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f03" },
+    "clientId": "681c717ea327223432641c02",
+    "clientName": "Lucia Bianchi",
+    "restaurantId": "681c717ea327223432641d03",
+    "restaurantName": "Sushi Way",
+    "restaurantAddress": "Via Toledo 120, Napoli",
+    "items": [
+      { "itemId": "53050", "name": "Ayam Percik", "price": 12.5, "quantity": 1 }
+    ],
+    "subtotal": 12.5,
+    "deliveryFee": 2.8,
+    "total": 15.3,
+    "expectedMinutes": 30,
+    "deliveryOption": "delivery",
+    "deliveryAddress": "Via Chiaia 15, Napoli",
+    "paymentMethod": "cards",
+    "status": "ordered",
+    "createdAt": "2026-02-04T19:00:00.000Z",
+    "updatedAt": "2026-02-04T19:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f04" },
+    "clientId": "681c717ea327223432641c02",
+    "clientName": "Lucia Bianchi",
+    "restaurantId": "681c717ea327223432641d04",
+    "restaurantName": "Pizza Lab",
+    "restaurantAddress": "Piazza della Signoria 3, Firenze",
+    "items": [
+      { "itemId": "52767", "name": "Bakewell tart", "price": 6.2, "quantity": 1 },
+      { "itemId": "52893", "name": "Apple & Blackberry Crumble", "price": 5.1, "quantity": 1 }
+    ],
+    "subtotal": 11.3,
+    "deliveryFee": 0,
+    "total": 11.3,
+    "expectedMinutes": null,
+    "deliveryOption": "pickup",
+    "deliveryAddress": "",
+    "paymentMethod": "coupons",
+    "status": "readyForPickup",
+    "createdAt": "2026-02-02T13:20:00.000Z",
+    "updatedAt": "2026-02-02T13:40:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f05" },
+    "clientId": "681c717ea327223432641c03",
+    "clientName": "Giulia Verdi",
+    "restaurantId": "681c717ea327223432641d05",
+    "restaurantName": "Green Bowl",
+    "restaurantAddress": "Corso Francia 22, Torino",
+    "items": [
+      { "itemId": "53049", "name": "Apam balik", "price": 4.6, "quantity": 2 }
+    ],
+    "subtotal": 9.2,
+    "deliveryFee": 2.2,
+    "total": 11.4,
+    "expectedMinutes": 25,
+    "deliveryOption": "delivery",
+    "deliveryAddress": "Via Po 11, Torino",
+    "paymentMethod": "cards",
+    "status": "preparation",
+    "createdAt": "2026-02-05T11:15:00.000Z",
+    "updatedAt": "2026-02-05T11:35:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f06" },
+    "clientId": "681c717ea327223432641c03",
+    "clientName": "Giulia Verdi",
+    "restaurantId": "681c717ea327223432641d01",
+    "restaurantName": "Burger Station",
+    "restaurantAddress": "Via Torino 10, Milano",
+    "items": [
+      { "itemId": "52768", "name": "Apple Frangipan Tart", "price": 6.5, "quantity": 1 }
+    ],
+    "subtotal": 6.5,
+    "deliveryFee": 0,
+    "total": 6.5,
+    "expectedMinutes": null,
+    "deliveryOption": "pickup",
+    "deliveryAddress": "",
+    "paymentMethod": "cards",
+    "status": "delivered",
+    "createdAt": "2026-01-30T19:10:00.000Z",
+    "updatedAt": "2026-01-30T19:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f07" },
+    "clientId": "681c717ea327223432641c04",
+    "clientName": "Luca Neri",
+    "restaurantId": "681c717ea327223432641d02",
+    "restaurantName": "Pasta Corner",
+    "restaurantAddress": "Via del Corso 58, Roma",
+    "items": [
+      { "itemId": "53049", "name": "Apam balik", "price": 4.9, "quantity": 3 }
+    ],
+    "subtotal": 14.7,
+    "deliveryFee": 2.5,
+    "total": 17.2,
+    "expectedMinutes": 40,
+    "deliveryOption": "delivery",
+    "deliveryAddress": "Via Appia 77, Roma",
+    "paymentMethod": "coupons",
+    "status": "ordered",
+    "createdAt": "2026-02-05T09:30:00.000Z",
+    "updatedAt": "2026-02-05T09:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f08" },
+    "clientId": "681c717ea327223432641c04",
+    "clientName": "Luca Neri",
+    "restaurantId": "681c717ea327223432641d03",
+    "restaurantName": "Sushi Way",
+    "restaurantAddress": "Via Toledo 120, Napoli",
+    "items": [
+      { "itemId": "53050", "name": "Ayam Percik", "price": 12.5, "quantity": 1 },
+      { "itemId": "52768", "name": "Apple Frangipan Tart", "price": 6.4, "quantity": 1 }
+    ],
+    "subtotal": 18.9,
+    "deliveryFee": 0,
+    "total": 18.9,
+    "expectedMinutes": null,
+    "deliveryOption": "pickup",
+    "deliveryAddress": "",
+    "paymentMethod": "cards",
+    "status": "readyForPickup",
+    "createdAt": "2026-02-02T20:10:00.000Z",
+    "updatedAt": "2026-02-02T20:35:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f09" },
+    "clientId": "681c717ea327223432641c05",
+    "clientName": "Sara Conti",
+    "restaurantId": "681c717ea327223432641d04",
+    "restaurantName": "Pizza Lab",
+    "restaurantAddress": "Piazza della Signoria 3, Firenze",
+    "items": [
+      { "itemId": "52893", "name": "Apple & Blackberry Crumble", "price": 5.1, "quantity": 2 }
+    ],
+    "subtotal": 10.2,
+    "deliveryFee": 2.4,
+    "total": 12.6,
+    "expectedMinutes": 28,
+    "deliveryOption": "delivery",
+    "deliveryAddress": "Via Nazionale 5, Firenze",
+    "paymentMethod": "cards",
+    "status": "preparation",
+    "createdAt": "2026-02-05T10:05:00.000Z",
+    "updatedAt": "2026-02-05T10:25:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641f0a" },
+    "clientId": "681c717ea327223432641c05",
+    "clientName": "Sara Conti",
+    "restaurantId": "681c717ea327223432641d05",
+    "restaurantName": "Green Bowl",
+    "restaurantAddress": "Corso Francia 22, Torino",
+    "items": [
+      { "itemId": "52767", "name": "Bakewell tart", "price": 6.1, "quantity": 1 }
+    ],
+    "subtotal": 6.1,
+    "deliveryFee": 0,
+    "total": 6.1,
+    "expectedMinutes": null,
+    "deliveryOption": "pickup",
+    "deliveryAddress": "",
+    "paymentMethod": "coupons",
+    "status": "delivered",
+    "createdAt": "2026-02-01T12:30:00.000Z",
+    "updatedAt": "2026-02-01T12:50:00.000Z"
+  }
+]

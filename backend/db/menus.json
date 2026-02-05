@@ -1,0 +1,237 @@
+[
+  {
+    "_id": { "$oid": "681c717ea327223432641e01" },
+    "restaurantId": "681c717ea327223432641d01",
+    "items": [
+      {
+        "mealId": "52768",
+        "name": "Apple Frangipan Tart",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 6.5,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["digestive biscuits", "butter", "Bramley apples"],
+        "measures": ["175g/6oz", "75g/3oz", "200g/7oz"],
+        "createdAt": "2026-02-02T09:00:00.000Z"
+      },
+      {
+        "mealId": "53050",
+        "name": "Ayam Percik",
+        "category": "Chicken",
+        "origin": "catalog",
+        "price": 11.9,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Chicken Thighs", "Challots", "Ginger", "Garlic Clove"],
+        "measures": ["6", "16", "1 1/2", "6"],
+        "createdAt": "2026-02-02T09:05:00.000Z"
+      },
+      {
+        "mealId": "52893",
+        "name": "Apple & Blackberry Crumble",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 5.5,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/xvsurr1511719182.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Plain Flour", "Caster Sugar", "Butter", "Blackberries"],
+        "measures": ["120g", "60g", "60g", "120g"],
+        "createdAt": "2026-02-02T09:10:00.000Z"
+      }
+    ],
+    "createdAt": "2026-02-02T09:00:00.000Z",
+    "updatedAt": "2026-02-02T09:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641e02" },
+    "restaurantId": "681c717ea327223432641d02",
+    "items": [
+      {
+        "mealId": "52767",
+        "name": "Bakewell tart",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 6.0,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/wyrqqq1468233628.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["plain flour", "chilled butter", "raspberry jam", "ground almonds"],
+        "measures": ["175g/6oz", "75g/2 1/2oz", "to taste", "75g/3oz"],
+        "createdAt": "2026-02-02T09:20:00.000Z"
+      },
+      {
+        "mealId": "53049",
+        "name": "Apam balik",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 4.9,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/adxcbq1619787919.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Milk", "Oil", "Eggs", "Flour"],
+        "measures": ["200ml", "60ml", "2", "1600g"],
+        "createdAt": "2026-02-02T09:25:00.000Z"
+      },
+      {
+        "mealId": "52893",
+        "name": "Apple & Blackberry Crumble",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 5.2,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/xvsurr1511719182.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Plain Flour", "Caster Sugar", "Butter", "Blackberries"],
+        "measures": ["120g", "60g", "60g", "120g"],
+        "createdAt": "2026-02-02T09:30:00.000Z"
+      }
+    ],
+    "createdAt": "2026-02-02T09:20:00.000Z",
+    "updatedAt": "2026-02-02T09:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641e03" },
+    "restaurantId": "681c717ea327223432641d03",
+    "items": [
+      {
+        "mealId": "53050",
+        "name": "Ayam Percik",
+        "category": "Chicken",
+        "origin": "catalog",
+        "price": 12.5,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Chicken Thighs", "Challots", "Ginger", "Garlic Clove"],
+        "measures": ["6", "16", "1 1/2", "6"],
+        "createdAt": "2026-02-02T09:40:00.000Z"
+      },
+      {
+        "mealId": "52768",
+        "name": "Apple Frangipan Tart",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 6.4,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["digestive biscuits", "butter", "Bramley apples"],
+        "measures": ["175g/6oz", "75g/3oz", "200g/7oz"],
+        "createdAt": "2026-02-02T09:45:00.000Z"
+      },
+      {
+        "mealId": "53049",
+        "name": "Apam balik",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 4.7,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/adxcbq1619787919.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Milk", "Oil", "Eggs", "Flour"],
+        "measures": ["200ml", "60ml", "2", "1600g"],
+        "createdAt": "2026-02-02T09:50:00.000Z"
+      }
+    ],
+    "createdAt": "2026-02-02T09:40:00.000Z",
+    "updatedAt": "2026-02-02T09:50:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641e04" },
+    "restaurantId": "681c717ea327223432641d04",
+    "items": [
+      {
+        "mealId": "52893",
+        "name": "Apple & Blackberry Crumble",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 5.1,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/xvsurr1511719182.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Plain Flour", "Caster Sugar", "Butter", "Blackberries"],
+        "measures": ["120g", "60g", "60g", "120g"],
+        "createdAt": "2026-02-02T10:00:00.000Z"
+      },
+      {
+        "mealId": "52767",
+        "name": "Bakewell tart",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 6.2,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/wyrqqq1468233628.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["plain flour", "chilled butter", "raspberry jam", "ground almonds"],
+        "measures": ["175g/6oz", "75g/2 1/2oz", "to taste", "75g/3oz"],
+        "createdAt": "2026-02-02T10:05:00.000Z"
+      },
+      {
+        "mealId": "53050",
+        "name": "Ayam Percik",
+        "category": "Chicken",
+        "origin": "catalog",
+        "price": 12.0,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/020z181619788503.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Chicken Thighs", "Challots", "Ginger", "Garlic Clove"],
+        "measures": ["6", "16", "1 1/2", "6"],
+        "createdAt": "2026-02-02T10:10:00.000Z"
+      }
+    ],
+    "createdAt": "2026-02-02T10:00:00.000Z",
+    "updatedAt": "2026-02-02T10:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641e05" },
+    "restaurantId": "681c717ea327223432641d05",
+    "items": [
+      {
+        "mealId": "52768",
+        "name": "Apple Frangipan Tart",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 6.3,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["digestive biscuits", "butter", "Bramley apples"],
+        "measures": ["175g/6oz", "75g/3oz", "200g/7oz"],
+        "createdAt": "2026-02-02T10:20:00.000Z"
+      },
+      {
+        "mealId": "53049",
+        "name": "Apam balik",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 4.6,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/adxcbq1619787919.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["Milk", "Oil", "Eggs", "Flour"],
+        "measures": ["200ml", "60ml", "2", "1600g"],
+        "createdAt": "2026-02-02T10:25:00.000Z"
+      },
+      {
+        "mealId": "52767",
+        "name": "Bakewell tart",
+        "category": "Dessert",
+        "origin": "catalog",
+        "price": 6.1,
+        "photoUrl": "https://www.themealdb.com/images/media/meals/wyrqqq1468233628.jpg",
+        "photoPublicId": null,
+        "removedIngredients": [],
+        "ingredients": ["plain flour", "chilled butter", "raspberry jam", "ground almonds"],
+        "measures": ["175g/6oz", "75g/2 1/2oz", "to taste", "75g/3oz"],
+        "createdAt": "2026-02-02T10:30:00.000Z"
+      }
+    ],
+    "createdAt": "2026-02-02T10:20:00.000Z",
+    "updatedAt": "2026-02-02T10:30:00.000Z"
+  }
+]

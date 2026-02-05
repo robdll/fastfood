@@ -1,43 +1,19 @@
 # Fastfood (Monorepo)
 
-Monolith repository with:
+Full-stack food ordering app with client and restaurant dashboards.
 
 - `backend/`: Express server (JavaScript, ESM)
 - `frontend/`: Vite + React app (JavaScript)
 
-This repo uses **npm workspaces** so there is a **single** `package-lock.json` at the top level.
+This repo uses npm workspaces, so there is a single `package-lock.json` at the top level.
 
-## Structure
+## Highlights
 
-```
-.
-├─ package.json
-├─ package-lock.json
-├─ backend/
-│  ├─ .env.example
-│  ├─ controllers/
-│  ├─ db/
-│  ├─ middleware/
-│  ├─ models/
-│  ├─ routes/
-│  ├─ scripts/
-│  ├─ utils/
-│  ├─ package.json
-│  └─ server.js
-└─ frontend/
-   ├─ public/
-   ├─ src/
-   │  ├─ components/
-   │  ├─ hooks/
-   │  ├─ routes/
-   │  ├─ services/
-   │  ├─ views/
-   │  ├─ App.jsx
-   │  └─ main.jsx
-   ├─ package.json
-   ├─ vite.config.js
-   └─ index.html
-```
+- Role-based auth (client and restaurant)
+- Restaurant menus and item management
+- Orders with delivery estimates and status tracking
+- Client cart and checkout flow
+- Swagger API docs
 
 ## Getting started
 
@@ -62,8 +38,8 @@ npm run dev:frontend
 
 ## Ports & API
 
-- Backend runs on `http://localhost:3000`
-- Frontend runs on Vite’s default port (usually `http://localhost:5173`)
+- Backend: `http://localhost:3000`
+- Frontend: Vite default (usually `http://localhost:5173`)
 - Frontend proxies `/api/*` to the backend via `frontend/vite.config.js`
 
 Health endpoint:
@@ -72,7 +48,12 @@ Health endpoint:
 curl http://localhost:3000/api/health
 ```
 
-## Database & seeding
+Swagger docs:
+
+- UI: `http://localhost:3000/api/docs`
+- JSON: `http://localhost:3000/api/docs.json`
+
+## Database & environment
 
 Copy `backend/.env.example` to `backend/.env`, then fill the values provided by an admin:
 
@@ -95,25 +76,72 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 ```
 
-You can also set `MONGODB_URI` directly (takes precedence over the parts above):
+You can also set `MONGODB_URI` directly (takes precedence):
 
 ```bash
 MONGODB_URI="mongodb+srv://user:password@cluster.mongodb.net/?appName=FastFoodCluster0"
 ```
 
-`backend/db/meal.json` is part of the repo and should not be edited by devs.
+## Seeding
 
-To seed the database, run:
+Seed files live in `backend/db/`:
+
+- `meal.json` (catalog)
+- `users.json` (mock users and restaurants)
+- `menus.json` (menu items per restaurant)
+- `orders.json` (orders across statuses)
+
+To seed the database:
 
 ```bash
 npm run seed -w backend
 ```
 
-You can test the connection first:
+The seed script clears and repopulates the `meals`, `users`, `menus`, and `orders` collections.
+
+Test the connection first if needed:
 
 ```bash
 npm run db:check -w backend
 ```
 
-The seed script clears and repopulates the `meals` collection.
+## Mock accounts
+
+All mock users use `password123`.
+
+Clients:
+
+- `mario.rossi@fastfood.test`
+- `lucia.bianchi@fastfood.test`
+- `giulia.verdi@fastfood.test`
+- `luca.neri@fastfood.test`
+- `sara.conti@fastfood.test`
+
+Restaurants:
+
+- `burger.station@fastfood.test`
+- `pasta.corner@fastfood.test`
+- `sushi.way@fastfood.test`
+- `pizza.lab@fastfood.test`
+- `green.bowl@fastfood.test`
+
+## Scripts
+
+From repo root:
+
+```bash
+npm run dev
+npm run dev:backend
+npm run dev:frontend
+npm run build
+npm run preview
+npm run start
+```
+
+Backend only:
+
+```bash
+npm run seed -w backend
+npm run db:check -w backend
+```
 

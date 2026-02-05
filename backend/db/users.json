@@ -1,0 +1,162 @@
+[
+  {
+    "_id": { "$oid": "681c717ea327223432641c01" },
+    "email": "mario.rossi@fastfood.test",
+    "password": "password123",
+    "firstName": "Mario",
+    "lastName": "Rossi",
+    "roles": ["client"],
+    "active": true,
+    "clientData": {
+      "paymentMethod": "cards",
+      "preferences": ["popular", "promo"]
+    },
+    "createdAt": "2026-02-01T10:10:00.000Z",
+    "updatedAt": "2026-02-01T10:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641c02" },
+    "email": "lucia.bianchi@fastfood.test",
+    "password": "password123",
+    "firstName": "Lucia",
+    "lastName": "Bianchi",
+    "roles": ["client"],
+    "active": true,
+    "clientData": {
+      "paymentMethod": "coupons",
+      "preferences": ["cheapest"]
+    },
+    "createdAt": "2026-02-01T10:20:00.000Z",
+    "updatedAt": "2026-02-01T10:20:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641c03" },
+    "email": "giulia.verdi@fastfood.test",
+    "password": "password123",
+    "firstName": "Giulia",
+    "lastName": "Verdi",
+    "roles": ["client"],
+    "active": true,
+    "clientData": {
+      "paymentMethod": "delivery",
+      "preferences": ["promo"]
+    },
+    "createdAt": "2026-02-01T10:30:00.000Z",
+    "updatedAt": "2026-02-01T10:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641c04" },
+    "email": "luca.neri@fastfood.test",
+    "password": "password123",
+    "firstName": "Luca",
+    "lastName": "Neri",
+    "roles": ["client"],
+    "active": true,
+    "clientData": {
+      "paymentMethod": "cards",
+      "preferences": ["popular"]
+    },
+    "createdAt": "2026-02-01T10:40:00.000Z",
+    "updatedAt": "2026-02-01T10:40:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641c05" },
+    "email": "sara.conti@fastfood.test",
+    "password": "password123",
+    "firstName": "Sara",
+    "lastName": "Conti",
+    "roles": ["client"],
+    "active": true,
+    "clientData": {
+      "paymentMethod": "coupons",
+      "preferences": ["cheapest", "popular"]
+    },
+    "createdAt": "2026-02-01T10:50:00.000Z",
+    "updatedAt": "2026-02-01T10:50:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641d01" },
+    "email": "burger.station@fastfood.test",
+    "password": "password123",
+    "firstName": "Burger",
+    "lastName": "Station",
+    "roles": ["restaurant"],
+    "active": true,
+    "restaurantData": {
+      "name": "Burger Station",
+      "phone": "+39 02 1234 5678",
+      "vat": "IT12345678901",
+      "address": "Via Torino 10, Milano"
+    },
+    "createdAt": "2026-02-01T11:00:00.000Z",
+    "updatedAt": "2026-02-01T11:00:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641d02" },
+    "email": "pasta.corner@fastfood.test",
+    "password": "password123",
+    "firstName": "Pasta",
+    "lastName": "Corner",
+    "roles": ["restaurant"],
+    "active": true,
+    "restaurantData": {
+      "name": "Pasta Corner",
+      "phone": "+39 06 2345 6789",
+      "vat": "IT23456789012",
+      "address": "Via del Corso 58, Roma"
+    },
+    "createdAt": "2026-02-01T11:10:00.000Z",
+    "updatedAt": "2026-02-01T11:10:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641d03" },
+    "email": "sushi.way@fastfood.test",
+    "password": "password123",
+    "firstName": "Sushi",
+    "lastName": "Way",
+    "roles": ["restaurant"],
+    "active": true,
+    "restaurantData": {
+      "name": "Sushi Way",
+      "phone": "+39 081 3456 7890",
+      "vat": "IT34567890123",
+      "address": "Via Toledo 120, Napoli"
+    },
+    "createdAt": "2026-02-01T11:20:00.000Z",
+    "updatedAt": "2026-02-01T11:20:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641d04" },
+    "email": "pizza.lab@fastfood.test",
+    "password": "password123",
+    "firstName": "Pizza",
+    "lastName": "Lab",
+    "roles": ["restaurant"],
+    "active": true,
+    "restaurantData": {
+      "name": "Pizza Lab",
+      "phone": "+39 055 4567 8901",
+      "vat": "IT45678901234",
+      "address": "Piazza della Signoria 3, Firenze"
+    },
+    "createdAt": "2026-02-01T11:30:00.000Z",
+    "updatedAt": "2026-02-01T11:30:00.000Z"
+  },
+  {
+    "_id": { "$oid": "681c717ea327223432641d05" },
+    "email": "green.bowl@fastfood.test",
+    "password": "password123",
+    "firstName": "Green",
+    "lastName": "Bowl",
+    "roles": ["restaurant"],
+    "active": true,
+    "restaurantData": {
+      "name": "Green Bowl",
+      "phone": "+39 011 5678 9012",
+      "vat": "IT56789012345",
+      "address": "Corso Francia 22, Torino"
+    },
+    "createdAt": "2026-02-01T11:40:00.000Z",
+    "updatedAt": "2026-02-01T11:40:00.000Z"
+  }
+]
