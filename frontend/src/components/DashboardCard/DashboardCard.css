@@ -1,3 +1,19 @@
+.dashboardCard__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.dashboardCard__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .dashboardCard__actions {
   margin-top: 12px;
   display: flex;
