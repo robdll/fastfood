@@ -6,6 +6,8 @@ import {
   insertOrders,
   updateOrderStatusById,
 } from '../models/ordersDao.js'
+import { findRestaurantById } from '../models/usersDao.js'
+import { estimateDelivery } from '../utils/delivery.js'
 
 const ORDER_STATUSES = ['ordered', 'preparation', 'readyForPickup', 'delivered']
 
@@ -34,47 +36,102 @@ const createOrders = async (req, res) => {
     return
   }
 
-  const now = new Date()
-  const orderDocs = []
-
-  for (const order of orders) {
-    const restaurantId = order?.restaurantId?.toString().trim()
-    const items = sanitizeItems(order?.items)
-    if (!restaurantId || items.length === 0) {
-      res.status(400).json({ error: 'Each order must include restaurant and items.' })
-      return
-    }
-    const status = ORDER_STATUSES.includes(order?.status)
-      ? order.status
-      : 'ordered'
-
-    orderDocs.push({
-      clientId,
-      restaurantId,
-      restaurantName: order?.restaurantName ?? '',
-      restaurantAddress: order?.restaurantAddress ?? '',
-      items,
-      subtotal: Number(order?.subtotal ?? 0),
-      deliveryFee:
-        order?.deliveryFee === null || order?.deliveryFee === undefined
-          ? null
-          : Number(order.deliveryFee),
-      total: order?.total === null || order?.total === undefined ? null : Number(order.total),
-      expectedMinutes:
-        order?.expectedMinutes === null || order?.expectedMinutes === undefined
-          ? null
-          : Number(order.expectedMinutes),
-      deliveryOption: order?.deliveryOption ?? 'pickup',
-      deliveryAddress: order?.deliveryAddress ?? '',
-      paymentMethod: order?.paymentMethod ?? 'delivery',
-      status,
-      createdAt: now,
-      updatedAt: now,
-    })
-  }
-
   const { client, db } = await connectToDatabase()
   try {
+    const now = new Date()
+    const orderDocs = []
+    const restaurantIds = Array.from(
+      new Set(
+        orders
+          .map((order) => order?.restaurantId?.toString().trim())
+          .filter(Boolean)
+      )
+    )
+    const preparationCounts =
+      restaurantIds.length > 0
+        ? await countPreparationByRestaurantIds(db, restaurantIds)
+        : {}
+    const restaurantById = {}
+    for (const id of restaurantIds) {
+      const restaurant = await findRestaurantById(db, id)
+      if (!restaurant) {
+        res.status(400).json({ error: 'Restaurant not found.' })
+        return
+      }
+      restaurantById[id] = restaurant
+    }
+    const lang =
+      req.headers['accept-language']?.toString().split(',')[0]?.trim() || ''
+
+    for (const order of orders) {
+      const restaurantId = order?.restaurantId?.toString().trim()
+      const items = sanitizeItems(order?.items)
+      if (!restaurantId || items.length === 0) {
+        res.status(400).json({ error: 'Each order must include restaurant and items.' })
+        return
+      }
+      const status = ORDER_STATUSES.includes(order?.status)
+        ? order.status
+        : 'ordered'
+      const deliveryOption = order?.deliveryOption ?? 'pickup'
+      const restaurantData = restaurantById[restaurantId]?.restaurantData ?? {}
+      const restaurantAddress =
+        restaurantData.address?.toString().trim() ||
+        order?.restaurantAddress?.toString().trim() ||
+        ''
+      const deliveryAddress =
+        deliveryOption === 'delivery'
+          ? order?.deliveryAddress?.toString().trim() || ''
+          : ''
+      const subtotal = Number(order?.subtotal ?? 0)
+      let deliveryFee = deliveryOption === 'delivery' ? null : 0
+      let expectedMinutes = deliveryOption === 'delivery' ? null : null
+      let total = subtotal
+
+      if (deliveryOption === 'delivery') {
+        if (!deliveryAddress) {
+          res.status(400).json({ error: 'Delivery address is required.' })
+          return
+        }
+        if (!restaurantAddress) {
+          res.status(400).json({ error: 'Restaurant address is required.' })
+          return
+        }
+        try {
+          const estimate = await estimateDelivery({
+            restaurantAddress,
+            deliveryAddress,
+            preparationCount: preparationCounts[restaurantId] ?? 0,
+            lang,
+          })
+          deliveryFee = estimate.fee
+          expectedMinutes = estimate.minutes
+          total = subtotal + deliveryFee
+        } catch (error) {
+          res.status(502).json({ error: 'Unable to calculate delivery estimate.' })
+          return
+        }
+      }
+
+      orderDocs.push({
+        clientId,
+        restaurantId,
+        restaurantName: order?.restaurantName ?? '',
+        restaurantAddress,
+        items,
+        subtotal,
+        deliveryFee,
+        total,
+        expectedMinutes,
+        deliveryOption,
+        deliveryAddress,
+        paymentMethod: order?.paymentMethod ?? 'delivery',
+        status,
+        createdAt: now,
+        updatedAt: now,
+      })
+    }
+
     const savedOrders = await insertOrders(db, orderDocs)
     res.status(201).json({ orders: savedOrders })
   } finally {

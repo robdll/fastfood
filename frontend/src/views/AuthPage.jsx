@@ -16,6 +16,7 @@ function AuthPage({ onAuthSuccess, lang, onLangChange, t }) {
         <div className="page">
           <AuthForm
             t={t}
+            lang={lang}
             onSubmit={(authResponse) => {
               onAuthSuccess(authResponse)
             }}

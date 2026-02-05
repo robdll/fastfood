@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import Spinner from '../Spinner/Spinner'
+import AddressPicker from '../AddressPicker/AddressPicker'
 import useLogin from '../../hooks/useLogin'
 import useSignup from '../../hooks/useSignup'
 import useToast from '../../hooks/useToast'
 import './AuthForm.css'
 
-function AuthForm({ onSubmit, t }) {
+function AuthForm({ onSubmit, t, lang }) {
   const [mode, setMode] = useState('signin')
   const [roles, setRoles] = useState({
     client: true,
@@ -276,10 +277,16 @@ function AuthForm({ onSubmit, t }) {
                     <span>{t('auth.vat')}</span>
                     <input className="input" name="vat" />
                   </label>
-                  <label className="formField">
-                    <span>{t('auth.restaurantAddress')}</span>
-                    <input className="input" name="restaurantAddress" />
-                  </label>
+                  <div className="formField formField--full">
+                    <label htmlFor="restaurantAddress">
+                      {t('auth.restaurantAddress')}
+                    </label>
+                    <AddressPicker
+                      inputId="restaurantAddress"
+                      t={t}
+                      lang={lang}
+                    />
+                  </div>
                 </div>
               </div>
             )}
