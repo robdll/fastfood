@@ -1,8 +1,10 @@
+import { apiUrl } from './api'
+
 const getRestaurants = async (
   token,
   fallbackMessage = 'Unable to load restaurants.'
 ) => {
-  const response = await fetch('/api/restaurants', {
+  const response = await fetch(apiUrl('/api/restaurants'), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -27,7 +29,7 @@ const getRestaurantById = async (
   token,
   fallbackMessage = 'Unable to load restaurant.'
 ) => {
-  const response = await fetch(`/api/restaurants/${id}`, {
+  const response = await fetch(apiUrl(`/api/restaurants/${id}`), {
     headers: {
       Authorization: `Bearer ${token}`,
     },

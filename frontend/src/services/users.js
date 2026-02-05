@@ -1,5 +1,7 @@
+import { apiUrl } from './api'
+
 const createUser = async (payload, fallbackMessage = 'Unable to create account.') => {
-  const response = await fetch('/api/users', {
+  const response = await fetch(apiUrl('/api/users'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -24,7 +26,7 @@ const getUserById = async (
   token,
   fallbackMessage = 'Unable to load user profile.'
 ) => {
-  const response = await fetch(`/api/users/${id}`, {
+  const response = await fetch(apiUrl(`/api/users/${id}`), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -50,7 +52,7 @@ const updateUser = async (
   payload,
   fallbackMessage = 'Unable to update account.'
 ) => {
-  const response = await fetch(`/api/users/${id}`, {
+  const response = await fetch(apiUrl(`/api/users/${id}`), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

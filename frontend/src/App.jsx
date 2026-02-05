@@ -16,6 +16,7 @@ import {
 } from './utils/auth'
 import useToast from './hooks/useToast'
 import { getUserById } from './services/users'
+import { apiUrl } from './services/api'
 
 function App() {
   const [health, setHealth] = useState(null)
@@ -64,7 +65,7 @@ function App() {
     async function load() {
       try {
         setError(null)
-        const res = await fetch('/api/health')
+        const res = await fetch(apiUrl('/api/health'))
         if (!res.ok) throw new Error(`Request failed: ${res.status}`)
         const data = await res.json()
         if (!cancelled) setHealth(data)

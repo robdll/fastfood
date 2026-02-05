@@ -1,9 +1,11 @@
+import { apiUrl } from './api'
+
 const createOrders = async (
   orders,
   token,
   fallbackMessage = 'Unable to place the order.'
 ) => {
-  const response = await fetch('/api/orders', {
+  const response = await fetch(apiUrl('/api/orders'), {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -33,7 +35,7 @@ const getPreparationCounts = async (
 ) => {
   const ids = Array.isArray(restaurantIds) ? restaurantIds.filter(Boolean) : []
   const query = ids.length > 0 ? `?restaurantIds=${ids.join(',')}` : ''
-  const response = await fetch(`/api/orders/preparation-counts${query}`, {
+  const response = await fetch(apiUrl(`/api/orders/preparation-counts${query}`), {
     headers: {
       Authorization: `Bearer ${token}`,
     },

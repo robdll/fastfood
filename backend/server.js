@@ -1,4 +1,5 @@
 import dotenv from 'dotenv'
+import cors from 'cors'
 import express from 'express'
 import swaggerUi from 'swagger-ui-express'
 import { dirname, resolve } from 'path'
@@ -11,7 +12,11 @@ const __dirname = dirname(__filename)
 dotenv.config({ path: resolve(__dirname, '.env') })
 
 const app = express()
+const corsOrigin = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+  : '*'
 
+app.use(cors({ origin: corsOrigin }))
 app.use(express.json())
 app.get('/api/docs.json', (req, res) => res.json(swaggerSpec))
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))

@@ -1,9 +1,11 @@
+import { apiUrl } from './api'
+
 const getMenuByRestaurantId = async (
   restaurantId,
   token,
   fallbackMessage = 'Unable to load menu.'
 ) => {
-  const response = await fetch(`/api/menus/${restaurantId}`, {
+  const response = await fetch(apiUrl(`/api/menus/${restaurantId}`), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -43,7 +45,7 @@ const addMenuItems = async (
     }
   })
 
-  const response = await fetch(`/api/menus/${restaurantId}/items`, {
+  const response = await fetch(apiUrl(`/api/menus/${restaurantId}/items`), {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -86,7 +88,7 @@ const updateMenuItem = async (
     formData.append('photo', updates.photo)
   }
 
-  const response = await fetch(`/api/menus/${restaurantId}/items/${mealId}`, {
+  const response = await fetch(apiUrl(`/api/menus/${restaurantId}/items/${mealId}`), {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -114,7 +116,7 @@ const deleteMenuItem = async (
   token,
   fallbackMessage = 'Unable to remove the dish.'
 ) => {
-  const response = await fetch(`/api/menus/${restaurantId}/items/${mealId}`, {
+  const response = await fetch(apiUrl(`/api/menus/${restaurantId}/items/${mealId}`), {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`,

@@ -1,5 +1,7 @@
+import { apiUrl } from './api'
+
 const loginUser = async (payload, fallbackMessage = 'Unable to sign in.') => {
-  const response = await fetch('/api/auth/login', {
+  const response = await fetch(apiUrl('/api/auth/login'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

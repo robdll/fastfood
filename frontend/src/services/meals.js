@@ -1,5 +1,7 @@
+import { apiUrl } from './api'
+
 const getMeals = async (token, fallbackMessage = 'Unable to load meals.') => {
-  const response = await fetch('/api/meals', {
+  const response = await fetch(apiUrl('/api/meals'), {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -33,7 +35,7 @@ const createMeal = async (
     formData.append('photo', payload.photo)
   }
 
-  const response = await fetch('/api/meals', {
+  const response = await fetch(apiUrl('/api/meals'), {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
