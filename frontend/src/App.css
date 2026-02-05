@@ -132,6 +132,25 @@
   opacity: 0.85;
 }
 
+.input {
+  border: 3px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+}
+
+.menuSearch {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  min-width: 220px;
+}
+
+.menuSearch .input {
+  width: min(320px, 100%);
+}
+
 .menuCard {
   margin-top: 16px;
 }
@@ -152,6 +171,11 @@
 
 .menuActions--right {
   margin-left: auto;
+}
+
+.menuActions__cart {
+  height: 50px;
+  align-self: flex-end;
 }
 
 .menuError {

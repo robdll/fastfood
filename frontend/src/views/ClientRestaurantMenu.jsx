@@ -7,6 +7,7 @@ import useToast from '../hooks/useToast'
 import { getMenuByRestaurantId } from '../services/menus'
 import { getRestaurantById } from '../services/restaurants'
 import { addCartItem } from '../utils/cart'
+import { getMealIngredients } from '../utils/meals'
 import '../components/MenuTable/MenuTable.css'
 
 function ClientRestaurantMenu({
@@ -25,6 +26,7 @@ function ClientRestaurantMenu({
   const [menu, setMenu] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [menuError, setMenuError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     if (!token || !restaurantId) return undefined
@@ -84,6 +86,9 @@ function ClientRestaurantMenu({
         origin,
         imageUrl,
         category: item?.category ?? item?.mealCategory ?? null,
+        ingredients: item?.ingredients ?? item?.meal?.ingredients ?? null,
+        measures: item?.measures ?? item?.meal?.measures ?? null,
+        raw: item,
       }
     })
   }, [menu])
@@ -103,6 +108,29 @@ function ClientRestaurantMenu({
     }
     return value.toString()
   }
+
+  const filteredMenuItems = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase()
+    if (!query) return menuItems
+    return menuItems.filter((item) => {
+      const priceText =
+        item.price === null || item.price === undefined ? '' : item.price.toString()
+      const formattedPrice = formatPrice(item.price)
+      const ingredients = getMealIngredients(item.raw ?? item)
+        .map((ingredient) => ingredient.name)
+        .join(' ')
+      const haystack = [
+        item.name ?? '',
+        item.category ?? '',
+        priceText,
+        formattedPrice,
+        ingredients,
+      ]
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(query)
+    })
+  }, [menuItems, searchTerm])
 
   const getOriginLabel = (origin) =>
     origin === 'catalog'
@@ -160,9 +188,22 @@ function ClientRestaurantMenu({
               </div>
               {restaurant && !isLoading && (
                 <div className="menuActions menuActions--right">
-                  <Link className="btn btn--secondary" to="/dashboard/client/cart">
-                    {t('clientMenu.goToCart')}
-                  </Link>
+                    <label className="menuSearch">
+                      <span>{t('clientMenu.searchLabel')}</span>
+                      <input
+                        className="input"
+                        type="search"
+                        value={searchTerm}
+                        placeholder={t('clientMenu.searchPlaceholder')}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                      />
+                    </label>
+                    <Link
+                      className="btn btn--secondary menuActions__cart"
+                      to="/dashboard/client/cart"
+                    >
+                      {t('clientMenu.goToCart')}
+                    </Link>
                 </div>
               )}
             </div>
@@ -189,14 +230,14 @@ function ClientRestaurantMenu({
                     </tr>
                   </thead>
                   <tbody>
-                    {menuItems.length === 0 ? (
+                    {filteredMenuItems.length === 0 ? (
                       <tr>
                         <td className="menuEmpty" colSpan={6}>
                           {t('clientMenu.empty')}
                         </td>
                       </tr>
                     ) : (
-                      menuItems.map((item) => (
+                      filteredMenuItems.map((item) => (
                         <tr key={item.id} className="menuRow">
                           <td>
                             <div className="menuThumb">

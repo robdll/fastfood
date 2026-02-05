@@ -19,6 +19,14 @@ function ClientRestaurants({
   const [restaurants, setRestaurants] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const formatAddress = (value) => {
+    const text = value?.toString().trim()
+    if (!text) return '—'
+    const tokens = text.split(/\s+/).filter(Boolean)
+    return tokens.slice(-4).join(' ')
+  }
 
   useEffect(() => {
     if (!token) return undefined
@@ -49,14 +57,25 @@ function ClientRestaurants({
     }
   }, [token, t])
 
+  const filteredRestaurants = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase()
+    if (!query) return restaurants
+    return restaurants.filter((restaurant) => {
+      const name = restaurant?.name ?? ''
+      const address = restaurant?.address ?? ''
+      return `${name} ${address}`.toLowerCase().includes(query)
+    })
+  }, [restaurants, searchTerm])
+
   const rows = useMemo(
     () =>
-      restaurants.map((restaurant) => ({
+      filteredRestaurants.map((restaurant) => ({
         id: restaurant._id ?? restaurant.id,
         name: restaurant.name ?? '—',
+        address: formatAddress(restaurant.address),
         phone: restaurant.phone ?? '—',
       })),
-    [restaurants]
+    [filteredRestaurants]
   )
 
   return (
@@ -82,6 +101,18 @@ function ClientRestaurants({
           <section className="card">
             <h2>{t('clientRestaurants.title')}</h2>
             <p className="muted">{t('clientRestaurants.body')}</p>
+            <div className="menuActions menuActions--right">
+              <label className="menuSearch">
+                <span>{t('clientRestaurants.searchLabel')}</span>
+                <input
+                  className="input"
+                  type="search"
+                  value={searchTerm}
+                  placeholder={t('clientRestaurants.searchPlaceholder')}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                />
+              </label>
+            </div>
             {isLoading && (
               <p className="muted">
                 <Spinner
@@ -96,6 +127,7 @@ function ClientRestaurants({
                 <thead>
                   <tr>
                     <th>{t('clientRestaurants.tableName')}</th>
+                    <th>{t('clientRestaurants.tableAddress')}</th>
                     <th>{t('clientRestaurants.tablePhone')}</th>
                     <th>{t('clientRestaurants.tableActions')}</th>
                   </tr>
@@ -103,7 +135,7 @@ function ClientRestaurants({
                 <tbody>
                   {!isLoading && rows.length === 0 ? (
                     <tr>
-                      <td className="menuEmpty" colSpan={3}>
+                      <td className="menuEmpty" colSpan={4}>
                         {t('clientRestaurants.empty')}
                       </td>
                     </tr>
@@ -117,6 +149,7 @@ function ClientRestaurants({
                         }
                       >
                         <td>{restaurant.name}</td>
+                        <td>{restaurant.address}</td>
                         <td>{restaurant.phone}</td>
                         <td className="menuTable__actions">
                           <button
