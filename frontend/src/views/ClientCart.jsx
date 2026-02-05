@@ -351,6 +351,10 @@ function ClientCart({
     try {
       const createdAt = new Date().toISOString()
       const trimmedAddress = deliveryAddress.trim()
+      const clientName = [user?.firstName, user?.lastName]
+        .filter(Boolean)
+        .join(' ')
+        .trim()
       const orders = groupedItems.map((group) => {
         const orderSubtotal = group.items.reduce(
           (acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 1),
@@ -374,6 +378,7 @@ function ClientCart({
           id: createOrderId(),
           createdAt,
           status: 'ordered',
+          clientName,
           restaurantId: group.restaurantId,
           restaurantName: group.restaurantName,
           restaurantAddress: group.restaurantAddress,

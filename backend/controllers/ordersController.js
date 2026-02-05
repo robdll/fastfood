@@ -6,7 +6,7 @@ import {
   insertOrders,
   updateOrderStatusById,
 } from '../models/ordersDao.js'
-import { findRestaurantById } from '../models/usersDao.js'
+import { findRestaurantById, findUserById } from '../models/usersDao.js'
 import { estimateDelivery } from '../utils/delivery.js'
 
 const ORDER_STATUSES = ['ordered', 'preparation', 'readyForPickup', 'delivered']
@@ -51,6 +51,11 @@ const createOrders = async (req, res) => {
       restaurantIds.length > 0
         ? await countPreparationByRestaurantIds(db, restaurantIds)
         : {}
+    const clientUser = await findUserById(db, clientId)
+    const clientName = [clientUser?.firstName, clientUser?.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
     const restaurantById = {}
     for (const id of restaurantIds) {
       const restaurant = await findRestaurantById(db, id)
@@ -115,6 +120,11 @@ const createOrders = async (req, res) => {
 
       orderDocs.push({
         clientId,
+        clientName:
+          order?.clientName?.toString().trim() ||
+          clientName ||
+          order?.customerName?.toString().trim() ||
+          '',
         restaurantId,
         restaurantName: order?.restaurantName ?? '',
         restaurantAddress,

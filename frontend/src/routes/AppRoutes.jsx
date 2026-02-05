@@ -11,6 +11,7 @@ import MenuCreateItem from '../views/MenuCreateItem'
 import MenuItemDetail from '../views/MenuItemDetail'
 import RestaurantMenu from '../views/RestaurantMenu'
 import RestaurantOrders from '../views/RestaurantOrders'
+import RestaurantStats from '../views/RestaurantStats'
 import Settings from '../views/Settings'
 
 function RequireAuth({ isAuthed, children }) {
@@ -234,6 +235,25 @@ function AppRoutes({
         element={
           <RequireAuth isAuthed={isAuthed}>
             <RestaurantOrders
+              user={user}
+              lang={lang}
+              onLangChange={onLangChange}
+              onLogout={() => {
+                onLogout()
+                navigate('/', { replace: true })
+              }}
+              canSwitch={canSwitchDashboards}
+              switchPath="/dashboard/client"
+              t={t}
+            />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/dashboard/restaurant/stats"
+        element={
+          <RequireAuth isAuthed={isAuthed}>
+            <RestaurantStats
               user={user}
               lang={lang}
               onLangChange={onLangChange}

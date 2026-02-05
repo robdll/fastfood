@@ -371,6 +371,13 @@ function Dashboard({
                 actionTo="/dashboard/restaurant/orders"
                 actionVariant="btn--sky"
               />
+              <DashboardCard
+                title={t('dashboard.statsTitle')}
+                body={t('dashboard.statsBody')}
+                actionLabel={t('dashboard.statsAction')}
+                actionTo="/dashboard/restaurant/stats"
+                actionVariant="btn--primary"
+              />
             </section>
           )}
         </div>

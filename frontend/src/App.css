@@ -147,6 +147,40 @@
   flex-direction: column;
 }
 
+.statsGrid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.statsCard {
+  border-width: 3px;
+  box-shadow: var(--shadow-md);
+  display: grid;
+  gap: 6px;
+}
+
+.statsCard--full {
+  grid-column: 1 / -1;
+}
+
+.statsCard__label {
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 700;
+  font-size: 12px;
+  margin: 0;
+}
+
+.statsCard__value {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.statsList {
+  margin: 0;
+  padding-left: 18px;
+}
+
 .landingSection {
   display: flex;
   align-items: stretch;
