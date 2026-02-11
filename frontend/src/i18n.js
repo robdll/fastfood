@@ -37,13 +37,71 @@ export const translations = {
       ],
       previewLabel: 'Project preview',
       sectionLabel: 'Status and info',
-      whatsNextTitle: "What's next",
+      whatsNextTitle: 'Available functionalities',
       whatsNextBody:
         'Enter the app to browse restaurant menus, build your cart, place orders, and track delivery. Restaurateurs can manage menus and process incoming orders.',
       whatsNextList: [
         'Sign in or register as customer or restaurateur',
         'Browse menus, add to cart, checkout with delivery or pickup',
         'Track order status and manage your restaurant dashboard',
+      ],
+      proofsTitle: 'Proofs of functionality',
+      proofsBody:
+        'Short, focused recordings that demonstrate the required flows.',
+      proofsEmpty: 'No proofs available yet.',
+      proofsPlaceholder: 'GIF coming soon.',
+      proofsGifAlt: 'Proof for',
+      proofsList: [
+        {
+          title: 'landing page',
+          description: 'Landing page with navigation and CTA and language selector.',
+          gif: '/gif/proof-1.gif',
+        },
+        {
+          title: 'Registration',
+          description: 'Customer registration flow.',
+          gif: '/gif/proof-2.gif',
+        },
+        {
+          title: 'Login',
+          description: 'Customer login flow.',
+          gif: '/gif/proof-3.gif',
+        },
+        {
+          title: 'Restaurant list + search',
+          description: 'Search restaurants by name or location.',
+          gif: '/gif/proof-4.gif',
+        },
+        {
+          title: 'Meal list + search',
+          description: 'Search meals by type, name, or price.',
+          gif: '/gif/proof-5.gif',
+        },
+        {
+          title: 'Meal detail',
+          description: 'View ingredients and photo for a dish.',
+          gif: '/gif/proof-6.gif',
+        },
+        {
+          title: 'Checkout',
+          description: 'Place an order from the cart.',
+          gif: '/gif/proof-8.gif',
+        },
+        {
+          title: 'Order status flow',
+          description: 'Ordered → preparing → delivering → delivered.',
+          gif: '/gif/proof-9.gif',
+        },
+        {
+          title: 'Restaurant statistics',
+          description: 'Dashboard stats view.',
+          gif: '/images/proof-statistics.png',
+        },
+        {
+          title: 'Client orders history',
+          description: 'View current and past orders.',
+          gif: '/images/proof-orderHistory.png',
+        },
       ],
     },
     footer: {
@@ -413,13 +471,71 @@ export const translations = {
       ],
       previewLabel: 'Anteprima progetto',
       sectionLabel: 'Stato e info',
-      whatsNextTitle: 'Cosa c’è dopo',
+      whatsNextTitle: 'Funzionalità disponibili',
       whatsNextBody:
         "Entra nell'app per sfogliare i menu dei ristoranti, preparare il carrello, effettuare ordini e seguire la consegna. I ristoratori possono gestire menu e ordini in arrivo.",
       whatsNextList: [
         'Accedi o registrati come cliente o ristoratore',
         'Sfoglia i menu, aggiungi al carrello, checkout con consegna o asporto',
         'Segui lo stato ordini e gestisci la dashboard del ristorante',
+      ],
+      proofsTitle: 'Prove di funzionamento',
+      proofsBody:
+        'Brevi registrazioni che dimostrano i flussi richiesti dal progetto.',
+      proofsEmpty: 'Nessuna prova disponibile al momento.',
+      proofsPlaceholder: 'GIF in arrivo.',
+      proofsGifAlt: 'Prova per',
+      proofsList: [
+        {
+          title: 'Accesso + profilo',
+          description: 'Registrazione e login per entrambe le utenze.',
+          gif: '/gif/proof-1.gif',
+        },
+        {
+          title: 'Registrazione',
+          description: 'Registrazione cliente.',
+          gif: '/gif/proof-2.gif',
+        },
+        {
+          title: 'Login',
+          description: 'Login cliente.',
+          gif: '/gif/proof-3.gif',
+        },
+        {
+          title: 'Lista ristoranti + ricerca',
+          description: 'Ricerca ristoranti per nome o luogo.',
+          gif: '/gif/proof-4.gif',
+        },
+        {
+          title: 'Lista piatti + ricerca',
+          description: 'Ricerca piatti per tipo, nome o prezzo.',
+          gif: '/gif/proof-5.gif',
+        },
+        {
+          title: 'Dettaglio piatto',
+          description: 'Ingredienti e foto del piatto.',
+          gif: '/gif/proof-6.gif',
+        },
+        {
+          title: 'Checkout',
+          description: 'Ordine completato dal carrello.',
+          gif: '/gif/proof-8.gif',
+        },
+        {
+          title: 'Stato ordine',
+          description: 'Ordinato → in preparazione → in consegna → consegnato.',
+          gif: '/gif/proof-9.gif',
+        },
+        {
+          title: 'Statistiche ristorante',
+          description: 'Dashboard con statistiche.',
+          gif: '/images/proof-statistics.png',
+        },
+        {
+          title: 'Storico ordini cliente',
+          description: 'Storico ordini presenti e passati.',
+          gif: '/images/proof-orderHistory.png',
+        },
       ],
     },
     footer: {
