@@ -39,11 +39,11 @@ export const translations = {
       sectionLabel: 'Status and info',
       whatsNextTitle: "What's next",
       whatsNextBody:
-        'This is just the landing. The “real app” area is currently a stub so you can already navigate via the CTA.',
+        'Enter the app to browse restaurant menus, build your cart, place orders, and track delivery. Restaurateurs can manage menus and process incoming orders.',
       whatsNextList: [
-        'Auth (customer / restaurateur)',
-        'Menu + cart + order status',
-        'Restaurant management and deliveries',
+        'Sign in or register as customer or restaurateur',
+        'Browse menus, add to cart, checkout with delivery or pickup',
+        'Track order status and manage your restaurant dashboard',
       ],
     },
     footer: {
@@ -415,11 +415,11 @@ export const translations = {
       sectionLabel: 'Stato e info',
       whatsNextTitle: 'Cosa c’è dopo',
       whatsNextBody:
-        "Questa è solo la landing. L’area “app vera” è una bozza, così puoi già navigare dalla CTA.",
+        "Entra nell'app per sfogliare i menu dei ristoranti, preparare il carrello, effettuare ordini e seguire la consegna. I ristoratori possono gestire menu e ordini in arrivo.",
       whatsNextList: [
-        'Auth (cliente / ristoratore)',
-        'Menu + carrello + stato ordine',
-        'Gestione ristoranti e consegne',
+        'Accedi o registrati come cliente o ristoratore',
+        'Sfoglia i menu, aggiungi al carrello, checkout con consegna o asporto',
+        'Segui lo stato ordini e gestisci la dashboard del ristorante',
       ],
     },
     footer: {
