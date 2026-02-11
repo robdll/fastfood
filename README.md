@@ -67,8 +67,8 @@ Variables to set:
 MONGODB_DB_NAME=fastfood
 MONGODB_DB_USER=your_user
 MONGODB_DB_PASSWORD=your_password
-MONGODB_CLUSTER_HOST=fastfoodcluster0.ds6zcgz.mongodb.net
-MONGODB_APP_NAME=FastFoodCluster0
+MONGODB_CLUSTER_HOST=your_cluster_host
+MONGODB_APP_NAME=cluster_name
 JWT_SECRET=replace_with_secure_secret
 JWT_EXPIRES_IN=30d
 CLOUDINARY_CLOUD_NAME=your_cloud_name
