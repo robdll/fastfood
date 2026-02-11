@@ -188,6 +188,33 @@
   border-top: 4px solid var(--ink);
 }
 
+.landingSection--compact {
+  min-height: auto;
+  padding: 24px 0 48px;
+}
+
+.landingSection__title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.landingSection__title--light {
+  width: 100%;
+  max-width: var(--container);
+  padding: 0 18px;
+  color: var(--ink);
+}
+
+.landingSection__subtitle {
+  width: 100%;
+  max-width: var(--container);
+  padding: 0 18px;
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .card {
   padding: 16px;
   border: 4px solid var(--ink);
